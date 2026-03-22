@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% block title %}Skin & Eye ViT AI{% endblock %}
+{% block extra_css %}<style>
+.skin-hero{background:linear-gradient(135deg,#db2777,#7c3aed);padding:60px 0 100px;text-align:center;color:#fff;position:relative;overflow:hidden}
+.skin-hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:60px;background:var(--surface);clip-path:ellipse(55% 100% at 50% 100%)}
+.skin-body{max-width:880px;margin:0 auto;padding:40px 20px 80px}
+.skin-card{background:#fff;border:1.5px solid var(--border);border-radius:20px;padding:26px;box-shadow:0 4px 20px rgba(219,39,119,.06);border:1.5px solid var(--border);margin-bottom:20px}
+.skin-title{font-size:.92rem;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:10px;color:var(--pink)}
+.mode-tabs{display:flex;gap:4px;margin-bottom:20px;background:var(--surface);border-radius:12px;padding:4px}
+.mtab{flex:1;padding:10px;text-align:center;border-radius:9px;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;color:var(--muted);border:none;background:none}
+.mtab.active{background:#fff;color:var(--pink);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.upload-area{border:2px dashed rgba(219,39,119,.25);border-radius:14px;padding:40px 20px;text-align:center;cursor:pointer;transition:all .25s;background:rgba(219,39,119,.02)}
+.upload-area:hover,.upload-area.dragover{border-color:var(--pink);background:rgba(219,39,119,.05)}
+#preview{max-width:280px;max-height:240px;border-radius:14px;margin:16px auto 0;display:block;box-shadow:0 6px 20px rgba(0,0,0,.12)}
+.btn-analyze{width:100%;background:var(--grad-pink);color:#fff;border:none;padding:14px;border-radius:12px;font-weight:800;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 6px 20px rgba(219,39,119,.3);transition:all .25s}
+.btn-analyze:hover{transform:translateY(-2px)}
+.condition-banner{background:var(--grad-pink);border-radius:18px;padding:28px;color:#fff;text-align:center;margin-bottom:20px}
+.cond-name{font-size:1.6rem;font-weight:900;font-family:var(--fd);margin-bottom:6px}
+.cond-conf{font-size:2rem;font-weight:900;font-family:var(--fd)}
+.treat-item{display:flex;gap:12px;align-items:flex-start;padding:14px;background:var(--surface);border-radius:12px;border:1px solid var(--border);margin-bottom:10px}
+.treat-type{padding:3px 10px;border-radius:20px;font-size:.65rem;font-weight:700;flex-shrink:0;margin-top:2px}
+.arch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-top:14px}
+.arch-block{background:#0f172a;border-radius:10px;padding:12px;text-align:center;color:#a5f3fc;font-family:var(--fm);font-size:.68rem;line-height:1.65}
+.arch-block .abn{font-size:.75rem;font-weight:700;color:#fff;margin-bottom:3px}
+</style>{% endblock %}
+{% block content %}
+<div class="skin-hero">
+  <div class="container" style="position:relative;z-index:2">
+    <div style="font-size:2.5rem;margin-bottom:14px">🔬</div>
+    <h1 style="font-size:1.9rem;font-weight:800;margin-bottom:10px">Skin & Eye Vision Transformer</h1>
+    <p style="opacity:.85;font-size:.9rem;max-width:520px;margin:0 auto 22px">Google ViT-base-patch16-224 · Upload any image for AI-powered disease classification</p>
+    <div style="display:flex;justify-content:center;gap:5px;flex-wrap:wrap">
+        <div style="background:rgba(255,255,255,.15);border-radius:8px;padding:6px 13px;font-size:.71rem;font-weight:700;color:#fff">Image Input</div>
+      <div style="color:rgba(255,255,255,.4);padding:6px 2px">→</div>
+      <div style="background:rgba(255,255,255,.15);border-radius:8px;padding:6px 13px;font-size:.71rem;font-weight:700;color:#fff">Patch 16×16</div>
+      <div style="color:rgba(255,255,255,.4);padding:6px 2px">→</div>
+      <div style="background:rgba(255,255,255,.15);border-radius:8px;padding:6px 13px;font-size:.71rem;font-weight:700;color:#fff">Linear Embed</div>
+      <div style="color:rgba(255,255,255,.4);padding:6px 2px">→</div>
+      <div style="background:rgba(255,255,255,.15);border-radius:8px;padding:6px 13px;font-size:.71rem;font-weight:700;color:#fff">12× Transformer</div>
+      <div style="color:rgba(255,255,255,.4);padding:6px 2px">→</div>
+      <div style="background:rgba(255,255,255,.15);border-radius:8px;padding:6px 13px;font-size:.71rem;font-weight:700;color:#fff">Condition Label</div>
+    </div>
+  </div>
+</div>
+
+<div class="skin-body">
+  <div class="skin-card">
+    <div class="skin-title"><i class="fa fa-toggle-on"></i> Select Analysis Type</div>
+    <div class="mode-tabs">
+      <button class="mtab active" onclick="setMode('eye',this)">👁️ Eye Disease</button>
+      <button class="mtab" onclick="setMode('skin',this)">🔬 Skin Analysis</button>
+    </div>
+    <div id="modeDesc" style="font-size:.78rem;color:var(--muted);padding:10px 14px;background:var(--surface);border-radius:10px;margin-bottom:16px;line-height:1.6">
+      Eye: Cataract, Glaucoma, Diabetic Retinopathy, Macular Degeneration, Keratoconus, Retinal Detachment, Normal Eye
+    </div>
+    <div class="upload-area" id="dropZone"
+      onclick="document.getElementById('imgInput').click()"
+      ondragover="event.preventDefault();this.classList.add('dragover')"
+      ondragleave="this.classList.remove('dragover')"
+      ondrop="handleDrop(event)">
+      <i class="fa fa-cloud-upload-alt" style="font-size:2.2rem;color:var(--pink);margin-bottom:10px;display:block"></i>
+      <div style="font-size:.88rem;font-weight:700;margin-bottom:4px" id="uploadLabel">Click to upload or drag & drop</div>
+      <div style="font-size:.73rem;color:var(--muted)">JPG, PNG · Any size</div>
+      <input type="file" id="imgInput" accept="image/*" style="display:none" onchange="previewImg(this)">
+    </div>
+    <img id="preview" style="display:none" alt="Preview">
+  </div>
+
+  <button class="btn-analyze" onclick="runAnalysis()">
+    <i class="fa fa-microscope"></i> Analyze with Vision Transformer
+  </button>
+
+  <div id="loadingDiv" style="display:none;text-align:center;padding:36px">
+    <div style="width:44px;height:44px;border:3px solid var(--border);border-top:3px solid var(--pink);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 12px"></div>
+    <p style="color:var(--muted);font-size:.85rem">Running ViT inference…</p>
+  </div>
+
+  <div id="result" style="display:none;margin-top:20px">
+    <div class="condition-banner">
+      <div id="condType" style="font-size:.78rem;opacity:.8;margin-bottom:6px">—</div>
+      <div class="cond-name" id="condName">—</div>
+      <div style="display:flex;justify-content:center;gap:28px;margin-top:14px;flex-wrap:wrap">
+        <div><div class="cond-conf" id="condConf">—</div><div style="font-size:.72rem;opacity:.75;margin-top:2px">Confidence</div></div>
+        <div><div style="font-size:1rem;font-weight:700;margin-top:10px;font-family:var(--fm)" id="modelName">ViT</div><div style="font-size:.72rem;opacity:.75;margin-top:2px">Model</div></div>
+      </div>
+      <div id="altList" style="margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap"></div>
+    </div>
+
+    <div class="skin-card">
+      <div class="skin-title"><i class="fa fa-prescription-bottle-alt"></i> Recommended Treatments</div>
+      <div id="treatList"></div>
+    </div>
+
+    <div class="skin-card">
+      <div class="skin-title"><i class="fa fa-project-diagram"></i> ViT Architecture</div>
+      <div class="arch-grid">
+        <div class="arch-block"><div class="abn">Input</div>224×224×3<br>RGB image</div>
+        <div class="arch-block"><div class="abn">Patch Split</div>16×16 px<br>196 patches</div>
+        <div class="arch-block"><div class="abn">Linear Embed</div>Patch → 768<br>dim vector</div>
+        <div class="arch-block"><div class="abn">Pos Encoding</div>Learnable<br>positions</div>
+        <div class="arch-block"><div class="abn">CLS Token</div>Classification<br>prepended</div>
+        <div class="arch-block"><div class="abn">12× Attn</div>Multi-Head<br>Self-Attention</div>
+        <div class="arch-block"><div class="abn">MLP Head</div>768 → N<br>classes</div>
+        <div class="arch-block"><div class="abn">Softmax</div>Probability<br>per class</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let mode='eye', imgB64=null;
+const MODE_DESC={
+  eye:'Eye: Cataract, Glaucoma, Diabetic Retinopathy, Macular Degeneration, Keratoconus, Retinal Detachment, Normal Eye',
+  skin:'Skin: Acne Vulgaris, Oily Skin, Dry Skin, Normal Skin, Hyperpigmentation, Rosacea, Eczema, Psoriasis'
+};
+function setMode(m,btn){
+  mode=m;
+  document.querySelectorAll('.mtab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('modeDesc').textContent=MODE_DESC[m];
+}
+function previewImg(input){
+  const f=input.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    const img=document.getElementById('preview');
+    img.src=e.target.result; img.style.display='block';
+    imgB64=e.target.result;
+    document.getElementById('uploadLabel').textContent=f.name;
+  };
+  r.readAsDataURL(f);
+}
+function handleDrop(e){
+  e.preventDefault(); document.getElementById('dropZone').classList.remove('dragover');
+  const f=e.dataTransfer.files[0];
+  if(f){const i=document.getElementById('imgInput');const dt=new DataTransfer();dt.items.add(f);i.files=dt.files;previewImg(i);}
+}
+function getCookie(n){let c=document.cookie.split(';');for(let i of c){let p=i.trim().split('=');if(p[0]===n)return decodeURIComponent(p[1]);}return '';}
+async function runAnalysis(){
+  if(!imgB64){alert('Please upload an image first.');return;}
+  document.getElementById('loadingDiv').style.display='block';
+  document.getElementById('result').style.display='none';
+  try{
+    const r=await fetch('/api/skin/analyze/',{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},body:JSON.stringify({image_b64:imgB64,condition_type:mode})});
+    const j=await r.json();
+    document.getElementById('loadingDiv').style.display='none';
+    if(!j.ok){alert(j.error||'Analysis failed');return;}
+    const d=j.data;
+    document.getElementById('condType').textContent=(mode==='eye'?'Eye Disease':'Skin Condition')+' · ViT Classification';
+    document.getElementById('condName').textContent=d.condition;
+    document.getElementById('condConf').textContent=d.confidence_pct+'%';
+    document.getElementById('modelName').textContent='ViT-base-patch16';
+    if(d.alternatives){
+      document.getElementById('altList').innerHTML='<span style="font-size:.7rem;opacity:.7;width:100%;text-align:center;display:block;margin-bottom:4px">Alternative possibilities</span>'+
+        d.alternatives.map(a=>`<span style="background:rgba(255,255,255,.2);padding:4px 12px;border-radius:20px;font-size:.72rem">${a.condition} (${(a.confidence*100).toFixed(1)}%)</span>`).join('');
+    }
+    const tl=document.getElementById('treatList');
+    tl.innerHTML=(d.treatments||[]).map(t=>`
+      <div class="treat-item">
+        <span class="treat-type" style="background:${t.type==='Home'?'var(--green-l)':'var(--violet-l)'};color:${t.type==='Home'?'var(--green)':'var(--violet)'}">${t.type}</span>
+        <div><div style="font-size:.87rem;font-weight:700;margin-bottom:3px">${t.name}</div><div style="font-size:.78rem;color:var(--muted);line-height:1.55">${t.desc}</div></div>
+      </div>`).join('');
+    document.getElementById('result').style.display='block';
+    document.getElementById('result').scrollIntoView({behavior:'smooth'});
+  }catch(e){document.getElementById('loadingDiv').style.display='none';alert('Error: '+e.message);}
+}
+</script>
+{% endblock %}

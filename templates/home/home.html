@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block extra_css %}<style>
+.hero-wrap{min-height:calc(100vh - 66px);display:flex;align-items:center;padding:60px 0 40px;position:relative;overflow:hidden}
+.hero-orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.35;animation:orb1 12s ease-in-out infinite}
+.hero-orb.o1{width:500px;height:500px;background:var(--grad);top:-100px;right:-100px}
+.hero-orb.o2{width:400px;height:400px;background:var(--grad-pink);bottom:-80px;left:-80px;animation:orb2 14s ease-in-out infinite}
+.hero-orb.o3{width:300px;height:300px;background:var(--grad-cyan);top:40%;left:40%;animation:orb3 10s ease-in-out infinite;opacity:.2}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;position:relative;z-index:2}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;background:var(--blue-xl);border:1.5px solid rgba(37,99,235,.2);color:var(--blue);padding:6px 16px;border-radius:50px;font-size:.75rem;font-weight:700;margin-bottom:22px;animation:slideDown .6s ease}
+.hero-h1{font-size:clamp(2.4rem,4.5vw,3.4rem);font-weight:800;line-height:1.1;margin-bottom:18px;animation:slideUp .7s ease .1s both}
+.hero-h1 .grad{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-h1 .warm{background:var(--grad-warm);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:1.05rem;color:var(--muted);line-height:1.75;max-width:500px;margin-bottom:32px;animation:slideUp .7s ease .2s both}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;animation:slideUp .7s ease .3s both}
+.btn-prim{background:var(--grad);color:#fff;border:none;padding:13px 28px;border-radius:12px;font-weight:700;font-size:.9rem;display:inline-flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(37,99,235,.35);transition:all .25s}
+.btn-prim:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(37,99,235,.45)}
+.btn-out{border:2px solid rgba(37,99,235,.3);color:var(--blue);padding:11px 26px;border-radius:12px;font-weight:700;font-size:.9rem;display:inline-flex;align-items:center;gap:8px;background:rgba(37,99,235,.04);transition:all .25s}
+.btn-out:hover{background:var(--blue-xl);border-color:var(--blue)}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:36px;animation:slideUp .7s ease .4s both}
+.hstat{background:rgba(255,255,255,.8);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;backdrop-filter:blur(10px)}
+.hstat-n{font-family:var(--fd);font-size:1.6rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hstat-l{font-size:.72rem;color:var(--muted);font-weight:600;margin-top:2px}
+.hero-visual{animation:slideRight .8s ease .2s both}
+.feat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.feat-card{background:rgba(255,255,255,.85);border:1px solid var(--border);border-radius:18px;padding:20px;backdrop-filter:blur(12px);transition:all .25s;position:relative;overflow:hidden}
+.feat-card:hover{transform:translateY(-4px);box-shadow:var(--sh-lg)}
+.feat-ic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1rem;color:#fff;margin-bottom:12px}
+.feat-title{font-size:.88rem;font-weight:700;margin-bottom:4px}
+.feat-desc{font-size:.75rem;color:var(--muted);line-height:1.55}
+.feat-badge{position:absolute;top:12px;right:12px;font-size:.62rem;font-weight:700;padding:3px 8px;border-radius:20px}
+.section{padding:80px 0}
+.section-label{display:inline-flex;align-items:center;gap:7px;font-size:.73rem;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
+.section-title{font-size:clamp(1.8rem,3vw,2.4rem);font-weight:800;margin-bottom:14px}
+.section-sub{font-size:1rem;color:var(--muted);max-width:560px;line-height:1.7;margin-bottom:48px}
+.tech-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
+.tech-card{background:#fff;border:1.5px solid var(--border);border-radius:16px;padding:20px 16px;text-align:center;transition:all .25s}
+.tech-card:hover{border-color:var(--blue);box-shadow:0 8px 24px rgba(37,99,235,.12);transform:translateY(-3px)}
+.tech-ic{font-size:1.8rem;margin-bottom:10px}
+.tech-name{font-weight:700;font-size:.85rem;margin-bottom:3px}
+.tech-sub{font-size:.7rem;color:var(--muted)}
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+.proj-card{background:#fff;border:1.5px solid var(--border);border-radius:20px;overflow:hidden;transition:all .3s}
+.proj-card:hover{transform:translateY(-6px);box-shadow:var(--sh-lg)}
+.proj-top{padding:28px 24px 20px;position:relative}
+.proj-num{position:absolute;top:16px;right:20px;font-size:2.5rem;font-weight:800;opacity:.07;font-family:var(--fd)}
+.proj-ic{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#fff;margin-bottom:14px;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.proj-name{font-size:1.05rem;font-weight:800;margin-bottom:6px}
+.proj-desc{font-size:.82rem;color:var(--muted);line-height:1.65}
+.proj-foot{padding:14px 24px;background:var(--surface);border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:6px}
+.proj-tag{font-size:.65rem;font-weight:700;padding:4px 10px;border-radius:20px;background:var(--blue-xl);color:var(--blue)}
+.pipeline{display:flex;align-items:center;gap:0;flex-wrap:wrap;justify-content:center;margin:40px 0}
+.pipe-step{background:#fff;border:2px solid var(--border);border-radius:14px;padding:18px 20px;text-align:center;min-width:140px;transition:all .25s;cursor:default}
+.pipe-step:hover{border-color:var(--blue);box-shadow:0 8px 20px rgba(37,99,235,.15)}
+.pipe-step .ps-ic{font-size:1.5rem;margin-bottom:6px}
+.pipe-step .ps-name{font-size:.78rem;font-weight:700}
+.pipe-step .ps-model{font-size:.65rem;color:var(--blue);font-family:var(--fm);margin-top:3px}
+.pipe-arr{font-size:1.2rem;color:var(--muted);padding:0 8px;flex-shrink:0}
+@media(max-width:768px){.hero-grid{grid-template-columns:1fr}.feat-grid{grid-template-columns:1fr}.hero-visual{display:none}}
+</style>{% endblock %}
+{% block content %}
+<section class="hero-wrap">
+  <div class="hero-orb o1"></div><div class="hero-orb o2"></div><div class="hero-orb o3"></div>
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <h1 class="hero-h1"><span class="warm">MediShop.AI</span> Platform</h1>
+        <p class="hero-sub">A production-ready Django healthcare platform combining Transformer NLP, Vision AI , sentiment analysis.</p>
+        <div class="hero-btns">
+          <a href="{% url 'shop' %}" class="btn-prim"><i class="fa fa-pills"></i> Explore Shop</a>
+          <a href="{% url 'about' %}" class="btn-out"><i class="fa fa-user"></i> About Me</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hstat"><div class="hstat-n">7</div><div class="hstat-l">AI Modules</div></div>
+          <div class="hstat"><div class="hstat-n">34+</div><div class="hstat-l">Products</div></div>
+          <div class="hstat"><div class="hstat-n">30+</div><div class="hstat-l">Doctors</div></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="feat-grid">
+          <div class="feat-card"><span class="feat-badge" style="background:var(--blue-xl);color:var(--blue)">NLP</span><div class="feat-ic" style="background:var(--grad)"><i class="fa fa-brain"></i></div><div class="feat-title">XLM-RoBERTa Sentiment</div><div class="feat-desc">Multilingual review analysis — 100+ languages, product & doctor ranking</div></div>
+          <div class="feat-card"><span class="feat-badge" style="background:var(--green-l);color:var(--green)">ViT</span><div class="feat-ic" style="background:var(--grad-green)"><i class="fa fa-eye"></i></div><div class="feat-title">Vision Transformer</div><div class="feat-desc">Skin & Eye disease classification using Google ViT</div></div>
+          <div class="feat-card"><span class="feat-badge" style="background:var(--amber-l);color:var(--amber)">mT5</span><div class="feat-ic" style="background:var(--grad-warm)"><i class="fa fa-comments"></i></div><div class="feat-title">mT5 Response Gen</div><div class="feat-desc">Sentiment → prompt engineering → multilingual response generation</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding:60px 0;background:#fff;border-top:1px solid var(--border)">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:10px">
+      <div class="section-label"><i class="fa fa-project-diagram"></i> Complete AI Pipeline</div>
+      <h2 class="section-title">How the AI Stack Works Together</h2>
+    </div>
+    <div class="pipeline">
+      <div class="pipe-step"><div class="ps-ic">📝</div><div class="ps-name">User Input</div><div class="ps-model">Text / Image / Form</div></div>
+      <div class="pipe-arr">→</div>
+      <div class="pipe-step"><div class="ps-ic">🧠</div><div class="ps-name">XLM-RoBERTa</div><div class="ps-model">Sentiment Analysis</div></div>
+      <div class="pipe-arr">→</div>
+      <div class="pipe-step"><div class="ps-ic">⚙️</div><div class="ps-name">Prompt Engineering</div><div class="ps-model">Context Injection</div></div>
+      <div class="pipe-arr">→</div>
+      <div class="pipe-step"><div class="ps-ic">🔤</div><div class="ps-name">mT5 Generator</div><div class="ps-model">Response Generation</div></div>
+      <div class="pipe-arr">→</div>
+      <div class="pipe-step"><div class="ps-ic">✅</div><div class="ps-name">JSON Output</div><div class="ps-model">Structured Result</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:var(--surface)">
+  <div class="container">
+    <div class="section-label"><i class="fa fa-code"></i> What I Built</div>
+    <h2 class="section-title">Modules in This Platform</h2>
+    <p class="section-sub">Each module is a separate Django app with its own models, views, and AI integration</p>
+    <div class="proj-grid">
+      <div class="proj-card"><div class="proj-top"><div class="proj-num">01</div><div class="proj-ic" style="background:var(--grad)"><i class="fa fa-pills"></i></div><div class="proj-name">AI-Ranked Medicine Shop</div><div class="proj-desc">XLM-RoBERTa ranks 34+ medicines by review sentiment. Category-wise sorted display. Full cart, checkout, and order management with PostgreSQL.</div></div><div class="proj-foot"><span class="proj-tag">XLM-RoBERTa</span><span class="proj-tag">Django ORM</span><span class="proj-tag">PostgreSQL</span></div></div>
+      <div class="proj-card"><div class="proj-top"><div class="proj-num">03</div><div class="proj-ic" style="background:var(--grad-pink)"><i class="fa fa-eye"></i></div><div class="proj-name">Skin & Eye Vision Transformer</div><div class="proj-desc">Google ViT classifies skin conditions and eye diseases from images. Trainable for custom datasets. Full architecture displayed.</div></div><div class="proj-foot"><span class="proj-tag">ViT</span><span class="proj-tag">Hugging Face</span></div></div>
+      <div class="proj-card"><div class="proj-top"><div class="proj-num">04</div><div class="proj-ic" style="background:var(--grad-warm)"><i class="fa fa-language"></i></div><div class="proj-name">Multilingual Sentiment Check</div><div class="proj-desc">XLM-RoBERTa → Prompt Engineering → mT5 response generation pipeline. Supports 100+ languages. Complete JSON output with pipeline visualization.</div></div><div class="proj-foot"><span class="proj-tag">XLM-RoBERTa</span><span class="proj-tag">mT5</span><span class="proj-tag">Prompt Eng</span></div></div>
+      <div class="proj-card"><div class="proj-top"><div class="proj-num">05</div><div class="proj-ic" style="background:var(--grad-cyan)"><i class="fa fa-user-md"></i></div><div class="proj-name">NLP Doctor Recommendation</div><div class="proj-desc">30+ doctors across 10 specialties. Sentiment scores rank doctors within each domain. Best doctor first, all reviews analyzed.</div></div><div class="proj-foot"><span class="proj-tag">NLP Ranking</span><span class="proj-tag">Sentiment</span><span class="proj-tag">Multi-specialty</span></div></div>
+      <div class="proj-card"><div class="proj-top"><div class="proj-num">06</div><div class="proj-ic" style="background:linear-gradient(135deg,#f59e0b,#10b981)"><i class="fa fa-robot"></i></div><div class="proj-name">Medi AI Voice Chatbot</div><div class="proj-desc">15+ commands: add/remove cart, fill forms with AI cursor animation, voice recognition, order lookup, doctor booking, health tips and navigation.</div></div><div class="proj-foot"><span class="proj-tag">Speech API</span><span class="proj-tag">Form Fill</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:#fff">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:40px"><div class="section-label"><i class="fa fa-layer-group"></i> Technology Stack</div><h2 class="section-title">Built With</h2></div>
+    <div class="tech-grid">
+      <div class="tech-card"><div class="tech-name">Python 3.11</div><div class="tech-sub">Backend Language</div></div>
+      <div class="tech-card"><div class="tech-name">Django 5</div><div class="tech-sub">Web Framework</div></div>
+      <div class="tech-card"><div class="tech-name">PostgreSQL</div><div class="tech-sub">Primary Database</div></div>
+      <div class="tech-card"><div class="tech-name">Hugging Face</div><div class="tech-sub">Transformers</div></div>
+      <div class="tech-card"><div class="tech-name">XLM-RoBERTa</div><div class="tech-sub">Sentiment NLP</div></div>
+      <div class="tech-card"><div class="tech-name">ViT Transformer</div><div class="tech-sub">Image AI</div></div>
+    </div>
+  </div>
+</section>
+
+<section style="padding:80px 0;background:var(--grad);position:relative;overflow:hidden">
+  <div class="container" style="text-align:center;position:relative">
+    <h2 style="font-size:2.2rem;font-weight:800;color:#fff;margin-bottom:16px">Ready to Explore?</h2>
+    <p style="color:rgba(255,255,255,.8);font-size:1rem;margin-bottom:32px">Browse AI-ranked medicines, consult top doctors, assess your health risk, or get in touch</p>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+      <a href="{% url 'shop' %}" style="background:#fff;color:var(--blue);padding:13px 28px;border-radius:12px;font-weight:700;font-size:.9rem;display:inline-flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(0,0,0,.2)"><i class="fa fa-shopping-cart"></i> Open Shop</a>
+      <a href="{% url 'about' %}" style="background:rgba(255,255,255,.15);color:#fff;border:2px solid rgba(255,255,255,.4);padding:11px 26px;border-radius:12px;font-weight:700;font-size:.9rem;display:inline-flex;align-items:center;gap:8px"><i class="fa fa-envelope"></i> Contact Me</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

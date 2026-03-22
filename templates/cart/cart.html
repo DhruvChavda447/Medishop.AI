@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block title %}My Cart{% endblock %}
+{% block extra_css %}<style>
+.cart-wrap{max-width:1100px;margin:0 auto;padding:32px 20px 60px;display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start}
+.cart-main{background:#fff;border:1.5px solid var(--border);border-radius:20px;overflow:hidden}
+.cart-header{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.cart-header h2{font-size:1rem;font-weight:800;display:flex;align-items:center;gap:8px}
+.cart-item{display:flex;align-items:center;gap:16px;padding:18px 24px;border-bottom:1px solid var(--border);transition:background .15s}
+.cart-item:last-child{border-bottom:none}
+.cart-item:hover{background:#fafbff}
+.ci-img{width:72px;height:72px;border-radius:12px;object-fit:cover;background:var(--surface);flex-shrink:0;border:1px solid var(--border)}
+.ci-info{flex:1;min-width:0}
+.ci-name{font-size:.92rem;font-weight:700;margin-bottom:3px}
+.ci-meta{font-size:.74rem;color:var(--muted);margin-bottom:6px}
+.ci-price{font-size:.95rem;font-weight:800;color:var(--blue)}
+.qty-ctrl{display:flex;align-items:center;gap:0;border:1.5px solid var(--border);border-radius:10px;overflow:hidden}
+.qty-btn{width:32px;height:32px;border:none;background:#fff;cursor:pointer;font-size:.9rem;font-weight:700;color:var(--ink);transition:background .15s;display:flex;align-items:center;justify-content:center}
+.qty-btn:hover{background:var(--surface)}
+.qty-num{width:36px;text-align:center;font-size:.85rem;font-weight:700;border-left:1px solid var(--border);border-right:1px solid var(--border);height:32px;display:flex;align-items:center;justify-content:center}
+.ci-line{font-size:.92rem;font-weight:800;color:var(--blue);min-width:60px;text-align:right}
+.ci-del{width:28px;height:28px;border:none;background:none;cursor:pointer;color:var(--muted);font-size:.8rem;transition:color .15s;display:flex;align-items:center;justify-content:center;border-radius:6px}
+.ci-del:hover{color:var(--red);background:var(--red-l)}
+.summary-card{background:#fff;border:1.5px solid var(--border);border-radius:20px;padding:24px;position:sticky;top:78px}
+.sum-row{display:flex;justify-content:space-between;align-items:center;font-size:.85rem;padding:6px 0}
+.sum-divider{border:none;border-top:1.5px solid var(--border);margin:12px 0}
+.sum-total{display:flex;justify-content:space-between;align-items:center;font-size:1.05rem;font-weight:800;padding:6px 0}
+.btn-checkout{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:var(--grad);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:.95rem;cursor:pointer;box-shadow:0 6px 20px rgba(37,99,235,.3);transition:all .25s;text-decoration:none;margin-top:16px}
+.btn-checkout:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(37,99,235,.4)}
+.empty-cart{text-align:center;padding:80px 20px;background:#fff;border:1.5px solid var(--border);border-radius:20px}
+.empty-ic{width:80px;height:80px;background:var(--surface);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:2rem}
+@media(max-width:768px){.cart-wrap{grid-template-columns:1fr}.summary-card{position:static}}
+</style>{% endblock %}
+{% block content %}
+<div style="background:#fff;border-bottom:1px solid var(--border);padding:18px 0">
+  <div style="max-width:1100px;margin:0 auto;padding:0 20px">
+    <div style="font-size:.75rem;color:var(--muted);margin-bottom:4px"><a href="{% url 'shop' %}" style="color:var(--blue)">Shop</a> / Cart</div>
+    <h1 style="font-size:1.4rem;font-weight:800;display:flex;align-items:center;gap:10px"><i class="fa fa-shopping-cart" style="color:var(--blue)"></i> Shopping Cart</h1>
+  </div>
+</div>
+
+<div class="cart-wrap">
+{% if items %}
+  <!-- ITEMS -->
+  <div class="cart-main">
+    <div class="cart-header">
+      <h2><i class="fa fa-box" style="color:var(--blue)"></i> {{ items|length }} item{{ items|length|pluralize }} in cart</h2>
+      <button onclick="clearCart()" style="font-size:.78rem;color:var(--red);background:none;border:1.5px solid var(--red-l);padding:5px 12px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:5px"><i class="fa fa-trash-alt"></i> Clear All</button>
+    </div>
+    {% for item in items %}
+    <div class="cart-item" id="ci-{{ item.id }}">
+      <img class="ci-img" src="{{ item.img }}" alt="{{ item.name }}" onerror="this.style.display='none'">
+      <div class="ci-info">
+        <div class="ci-name">{{ item.name }}</div>
+        <div class="ci-meta">{{ item.mfr }} · {{ item.cat }}{% if item.rx %} · <span style="color:var(--amber);font-weight:700">Rx</span>{% endif %}</div>
+        <div class="ci-price">₹{{ item.dp|floatformat:0 }} each</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px">
+        <div class="qty-ctrl">
+          <button class="qty-btn" onclick="updateQty({{ item.id }}, {{ item.qty }} - 1)">−</button>
+          <span class="qty-num" id="qty-{{ item.id }}">{{ item.qty }}</span>
+          <button class="qty-btn" onclick="updateQty({{ item.id }}, {{ item.qty }} + 1)">+</button>
+        </div>
+        <div class="ci-line">₹{{ item.line_total|floatformat:0 }}</div>
+        <button class="ci-del" onclick="removeFromCart({{ item.id }})" title="Remove"><i class="fa fa-times"></i></button>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="summary-card">
+    <div style="font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:16px">Order Summary</div>
+    <div class="sum-row"><span>Subtotal ({{ items|length }} items)</span><span>₹{{ subtotal|floatformat:0 }}</span></div>
+    <div class="sum-row">
+      <span>Delivery</span>
+      <span style="color:{% if delivery == 0 %}var(--green){% else %}var(--ink){% endif %};font-weight:600">{% if delivery == 0 %}FREE{% else %}₹{{ delivery }}{% endif %}</span>
+    </div>
+    <div class="sum-row" style="color:var(--green)">
+      <span><i class="fa fa-tag" style="font-size:.7rem"></i> Member discount (5%)</span>
+      <span>−₹{{ discount|floatformat:0 }}</span>
+    </div>
+    <hr class="sum-divider">
+    <div class="sum-total">
+      <span>Total</span>
+      <span style="color:var(--blue);font-size:1.15rem">₹{{ total|floatformat:0 }}</span>
+    </div>
+    {% if free_remaining > 0 %}
+    <div style="margin-top:12px;padding:10px 14px;background:var(--amber-l);border-radius:10px;font-size:.76rem;color:var(--amber);font-weight:600;display:flex;align-items:center;gap:7px"><i class="fa fa-truck"></i> Add ₹{{ free_remaining|floatformat:0 }} more for FREE delivery</div>
+    {% else %}
+    <div style="margin-top:12px;padding:10px 14px;background:var(--green-l);border-radius:10px;font-size:.76rem;color:var(--green);font-weight:600;display:flex;align-items:center;gap:7px"><i class="fa fa-check-circle"></i> You qualify for FREE delivery!</div>
+    {% endif %}
+    <a href="{% url 'checkout' %}" class="btn-checkout"><i class="fa fa-lock"></i> Proceed to Checkout</a>
+    <a href="{% url 'shop' %}" style="display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:11px;border:1.5px solid var(--border);border-radius:12px;font-weight:600;font-size:.85rem;color:var(--muted);margin-top:10px;transition:all .2s" onmouseover="this.style.borderColor='var(--blue)';this.style.color='var(--blue)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'"><i class="fa fa-arrow-left"></i> Continue Shopping</a>
+    <div style="margin-top:14px;text-align:center;font-size:.7rem;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:6px"><i class="fa fa-shield-alt" style="color:var(--green)"></i> 100% Secure checkout · SSL Encrypted</div>
+  </div>
+
+{% else %}
+  <div class="empty-cart" style="grid-column:1/-1">
+    <div class="empty-ic"><i class="fa fa-shopping-cart" style="color:var(--muted)"></i></div>
+    <h3 style="font-size:1.1rem;font-weight:800;margin-bottom:8px">Your cart is empty</h3>
+    <p style="color:var(--muted);font-size:.88rem;margin-bottom:24px">Looks like you haven't added any medicines yet.</p>
+    <a href="{% url 'shop' %}" style="display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:var(--grad);color:#fff;border-radius:12px;font-weight:700;font-size:.9rem;box-shadow:0 6px 18px rgba(37,99,235,.3)"><i class="fa fa-pills"></i> Browse Products</a>
+  </div>
+{% endif %}
+</div>
+
+<script>
+function getCookie(n){let c=document.cookie.split(';');for(let i of c){let p=i.trim().split('=');if(p[0]===n)return decodeURIComponent(p[1]);}return '';}
+async function post(url,data){
+  const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},body:JSON.stringify(data)});
+  return r.json();
+}
+async function updateQty(id, qty){
+  if(qty < 1){removeFromCart(id);return;}
+  const r = await post('/api/cart/update/',{id,qty});
+  if(r.ok) location.reload();
+}
+async function removeFromCart(id){
+  const r = await post('/api/cart/remove/',{id});
+  if(r.ok) location.reload();
+}
+async function clearCart(){
+  if(!confirm('Remove all items?')) return;
+  const r = await post('/api/cart/',{items:[]});
+  if(r.ok) location.reload();
+}
+</script>
+{% endblock %}

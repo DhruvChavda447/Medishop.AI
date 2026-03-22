@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block title %}Dr. {{ doctor.name }}{% endblock %}
+{% block extra_css %}<style>
+.dr-pdp-wrap{max-width:1100px;margin:0 auto;padding:28px 20px 60px}
+.breadcrumb{font-size:.76rem;color:var(--muted);margin-bottom:20px;display:flex;gap:6px;align-items:center}
+.breadcrumb a{color:var(--blue)}
+.dr-pdp-grid{display:grid;grid-template-columns:320px 1fr;gap:24px;align-items:start}
+.dr-profile-card{background:#fff;border:1.5px solid var(--border);border-radius:20px;overflow:hidden;position:sticky;top:78px}
+.dr-profile-top{background:var(--grad);padding:28px 24px;text-align:center;color:#fff}
+.dr-avatar{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.2);border:3px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 12px}
+.dr-pname{font-size:1.15rem;font-weight:800;margin-bottom:4px}
+.dr-pdept{font-size:.82rem;opacity:.85;font-weight:600;margin-bottom:2px}
+.dr-pspec{font-size:.75rem;opacity:.75}
+.dr-profile-body{padding:20px 24px}
+.dr-stat-row{display:flex;gap:0;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px}
+.dr-stat{flex:1;padding:12px 8px;text-align:center;border-right:1px solid var(--border)}
+.dr-stat:last-child{border-right:none}
+.dr-stat-num{font-size:1rem;font-weight:800;font-family:var(--fd)}
+.dr-stat-lbl{font-size:.62rem;color:var(--muted);margin-top:2px}
+.dr-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.dr-tag{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:.72rem;font-weight:600}
+.btn-book{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;background:var(--grad-green);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:.9rem;cursor:pointer;box-shadow:0 6px 18px rgba(5,150,105,.3);transition:all .25s;text-decoration:none}
+.btn-book:hover{transform:translateY(-2px)}
+/* SLOTS */
+.slots-card{background:#fff;border:1.5px solid var(--border);border-radius:20px;padding:22px;margin-bottom:20px}
+.slot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:12px}
+.slot-item{padding:9px 8px;border:1.5px solid var(--border);border-radius:10px;text-align:center;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s;color:var(--muted)}
+.slot-item:hover{border-color:var(--green);color:var(--green);background:var(--green-l)}
+/* AI SCORE */
+.ai-card{background:#fff;border:1.5px solid var(--border);border-radius:20px;padding:22px;margin-bottom:20px}
+.score-display{display:flex;align-items:center;gap:16px}
+.score-circle{width:72px;height:72px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;font-weight:800;font-family:var(--fd);flex-shrink:0;box-shadow:0 8px 20px rgba(37,99,235,.3)}
+/* REVIEWS */
+.reviews-card{background:#fff;border:1.5px solid var(--border);border-radius:20px;padding:22px}
+.review-item{padding:14px;border:1px solid var(--border);border-radius:12px;margin-bottom:10px}
+.review-item:last-child{margin-bottom:0}
+.review-stars{color:#f59e0b;font-size:.8rem;margin-bottom:6px}
+.review-text{font-size:.83rem;color:var(--ink2);line-height:1.65}
+.review-by{font-size:.7rem;color:var(--muted);margin-top:5px}
+@media(max-width:900px){.dr-pdp-grid{grid-template-columns:1fr}.dr-profile-card{position:static}}
+</style>{% endblock %}
+{% block content %}
+<div class="dr-pdp-wrap">
+  <div class="breadcrumb">
+    <a href="{% url 'doctors' %}">Doctors</a>
+    <i class="fa fa-chevron-right" style="font-size:.6rem"></i>
+    <span>Dr. {{ doctor.name }}</span>
+  </div>
+
+  <div class="dr-pdp-grid">
+    <!-- PROFILE SIDEBAR -->
+    <div class="dr-profile-card">
+      <div class="dr-profile-top">
+        <div class="dr-avatar">{{ doctor.emoji }}</div>
+        <div class="dr-pname">Dr. {{ doctor.name }}</div>
+        <div class="dr-pdept">{{ doctor.dept }}</div>
+        <div class="dr-pspec">{{ doctor.spec }}</div>
+      </div>
+      <div class="dr-profile-body">
+        <div class="dr-stat-row">
+          <div class="dr-stat"><div class="dr-stat-num" style="color:var(--blue)">{{ doctor.exp }}</div><div class="dr-stat-lbl">Yrs Exp</div></div>
+          <div class="dr-stat"><div class="dr-stat-num" style="color:#f59e0b">★{{ doctor.rating }}</div><div class="dr-stat-lbl">Rating</div></div>
+          <div class="dr-stat"><div class="dr-stat-num" style="color:var(--green)">₹{{ doctor.fee }}</div><div class="dr-stat-lbl">Fee</div></div>
+        </div>
+        <div class="dr-tags">{% for tag in doctor.tags %}<span class="dr-tag">{{ tag }}</span>{% endfor %}</div>
+        <a href="{% url 'book_appointment' doctor.id %}" class="btn-book"><i class="fa fa-calendar-plus"></i> Book Appointment</a>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div>
+      <!-- AI SCORE -->
+      <div class="ai-card">
+        <h3 style="font-size:.9rem;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px"><i class="fa fa-brain" style="color:var(--blue)"></i> Sentiment Analysis Score</h3>
+        <div class="score-display">
+          <div class="score-circle">{{ doctor.score|floatformat:1 }}</div>
+          <div>
+            <div style="font-size:.9rem;font-weight:700;margin-bottom:4px">Score based on patient reviews</div>
+            <div style="font-size:.8rem;color:var(--muted);line-height:1.6">{{ doctor.reviews|length }} verified reviews analyzed · Higher score = more positive patient sentiment</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TIME SLOTS -->
+      <div class="slots-card">
+        <h3 style="font-size:.9rem;font-weight:800;margin-bottom:4px;display:flex;align-items:center;gap:8px"><i class="fa fa-clock" style="color:var(--green)"></i> Available Time Slots</h3>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:4px">Click a slot to start booking</p>
+        <div class="slot-grid">
+          {% for slot in doctor.slots %}
+          <a href="{% url 'book_appointment' doctor.id %}" class="slot-item">{{ slot }}</a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- PATIENT REVIEWS -->
+      <div class="reviews-card">
+        <h3 style="font-size:.9rem;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:8px"><i class="fa fa-comments" style="color:var(--violet)"></i> Patient Reviews</h3>
+        {% for rev in doctor.reviews %}
+        <div class="review-item">
+          <div class="review-stars">★★★★{% if forloop.counter|divisibleby:4 %}☆{% else %}★{% endif %}</div>
+          <div class="review-text">{{ rev }}</div>
+          <div class="review-by">Verified Patient · Review {{ forloop.counter }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,861 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}MediShop.AI{% endblock %} — Next-Gen AI Healthcare</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- AI CURSOR -->
+<div id="aiCursor"><div class="cur-icon"><i class="fa fa-robot"></i></div><div class="cur-label">AI Acting</div></div>
+
+<!-- TOAST WRAPPER -->
+<div id="twrap"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="container nav-in">
+    <a class="nav-brand" href="{% url 'home' %}">
+      <div class="nb-ic"><i class="fa fa-heartbeat"></i></div>
+      <span class="nb-t">MediShop.AI</span><span class="nb-p"></span>
+    </a>
+    <div class="nav-links">
+      <a class="nl {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}"><i class="fa fa-home"></i>Home</a>
+      <a class="nl {% if 'shop' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'shop' %}"><i class="fa fa-pills"></i>Shop</a>
+      <a class="nl {% if 'doctor' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'doctors' %}"><i class="fa fa-user-md"></i>Doctors</a>
+      <a class="nl {% if request.resolver_match.url_name == 'skin' %}active{% endif %}" href="{% url 'skin' %}"><i class="fa fa-eye"></i>Skin ViT</a>
+      <a class="nl {% if request.resolver_match.url_name == 'sentiment' %}active{% endif %}" href="{% url 'sentiment' %}"><i class="fa fa-brain"></i>Sentiment</a>
+      <a class="nl {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'about' %}"><i class="fa fa-user"></i>About</a>
+    </div>
+    <div class="nav-srch">
+      <i class="fa fa-search"></i>
+      <input type="text" placeholder="Search medicines, doctors…" id="gSrch" autocomplete="off">
+    </div>
+    <div class="nav-act">
+      <a class="bic" href="{% url 'cart' %}" title="Cart">
+        <i class="fa fa-shopping-cart"></i>
+        <span class="cart-badge" id="cBadge">0</span>
+      </a>
+      <div class="nav-user" onclick="window.location='{% url 'dashboard' %}'" title="My Account">
+        <div class="nav-user-av">{{ request.user.first_name|first|upper }}</div>
+        <span class="nav-user-nm">{{ request.user.first_name|default:request.user.username }}</span>
+      </div>
+      <a class="nav-logout" href="{% url 'logout' %}" title="Sign Out"><i class="fa fa-sign-out-alt"></i></a>
+      <button class="hb" onclick="document.getElementById('mobn').classList.toggle('open')">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- MOBILE NAV -->
+<div class="mob-nav" id="mobn">
+  <a class="mnlk" href="{% url 'home' %}" onclick="this.closest('.mob-nav').classList.remove('open')"><i class="fa fa-home"></i>Home</a>
+  <a class="mnlk" href="{% url 'shop' %}" onclick="this.closest('.mob-nav').classList.remove('open')"><i class="fa fa-pills"></i>Shop</a>
+  <a class="mnlk" href="{% url 'doctors' %}" onclick="this.closest('.mob-nav').classList.remove('open')"><i class="fa fa-user-md"></i>Doctors</a>
+  <a class="mnlk" href="{% url 'skin' %}" onclick="this.closest('.mob-nav').classList.remove('open')"><i class="fa fa-eye"></i>Skin ViT</a>
+  <a class="mnlk" href="{% url 'sentiment' %}" onclick="this.closest('.mob-nav').classList.remove('open')"><i class="fa fa-brain"></i>Sentiment</a>
+  <a class="mnlk" href="{% url 'about' %}" onclick="this.closest('.mob-nav').classList.remove('open')"><i class="fa fa-user"></i>About</a>
+  <a class="mnlk" href="{% url 'cart' %}" onclick="this.closest('.mob-nav').classList.remove('open')"><i class="fa fa-shopping-cart"></i>Cart</a>
+  <a class="mnlk" href="{% url 'dashboard' %}" onclick="this.closest('.mob-nav').classList.remove('open')"><i class="fa fa-tachometer-alt"></i>Dashboard</a>
+  <a class="mnlk" href="{% url 'logout' %}"><i class="fa fa-sign-out-alt"></i>Sign Out</a>
+</div>
+
+<!-- MESSAGES -->
+{% if messages %}
+<div style="position:fixed;top:80px;right:22px;z-index:9000;display:flex;flex-direction:column;gap:8px">
+  {% for message in messages %}
+  <div class="toast {% if message.tags == 'error' %}error{% elif message.tags == 'success' %}success{% else %}warning{% endif %}" style="animation:slideUp .3s ease">
+    <i class="fa {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-times-circle{% else %}fa-exclamation-triangle{% endif %}"></i>
+    <span>{{ message }}</span>
+    <button onclick="this.parentElement.remove()" style="background:none;border:none;color:var(--muted);cursor:pointer;margin-left:auto"><i class="fa fa-times"></i></button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- PAGE CONTENT -->
+<main>{% block content %}{% endblock %}</main>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <div class="nb-ic"><i class="fa fa-heartbeat"></i></div>
+          <span style="font-family:var(--fd);font-size:1.1rem;font-weight:800;color:#fff">MediShop<span style="background:var(--grad-warm);-webkit-background-clip:text;-webkit-text-fill-color:transparent">.AI</span></span>
+        </div>
+        <p class="footer-desc">AI-powered Django healthcare platform — NLP product ranking, Vision Transformer analysis, multilingual sentiment pipeline and smart Medi AI assistant.</p>
+      </div>
+      <div>
+        <div class="footer-head">Platform</div>
+        <div class="footer-links">
+          <a href="{% url 'shop' %}">Medicine Shop</a>
+          <a href="{% url 'doctors' %}">Find Doctors</a>
+          <a href="{% url 'skin' %}">Skin ViT</a>
+          <a href="{% url 'sentiment' %}">Check Sentiment</a>
+          <a href="{% url 'about' %}">About & Contact</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-head">Account</div>
+        <div class="footer-links">
+          <a href="{% url 'dashboard' %}">Dashboard</a>
+          <a href="{% url 'cart' %}">My Cart</a>
+          <a href="{% url 'checkout' %}">Checkout</a>
+          <a href="{% url 'logout' %}">Sign Out</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2024 MediShop.AI. Built with Django + PostgreSQL.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════════════════
+     MEDI AI BOT — FULL FEATURED
+     Commands:
+     - add <product> [qty N]
+     - remove <product>
+     - set <product> to N / increase/decrease <product>
+     - fill <form name> form
+     - my cart / my orders / my appointments
+     - book <doctor name>
+     - search <query>
+     - navigate: shop / doctors / health / skin / sentiment / about / cart / dashboard
+     - health tip / medicine tip
+     - voice commands (Chrome)
+══════════════════════════════════════════════ -->
+<button id="medi-btn" onclick="toggleMedi()" title="Medi AI Assistant">
+  <span class="medi-btn-ring"></span>
+  <i class="fa fa-robot"></i>
+  <span class="medi-btn-label">Medi AI</span>
+</button>
+
+<div id="mp">
+  <div class="mhdr">
+    <div class="mav-wrap">
+      <div class="mav">🤖</div>
+      <div class="mav-ring"></div>
+    </div>
+    <div class="mhdr-info">
+      <div class="mnm">Medi AI Assistant</div>
+      <div class="mst" id="mst"><span class="mst-dot"></span>Online · Ready</div>
+    </div>
+    <div class="mhdr-acts">
+      <button class="mhdr-btn" onclick="clearChat()" title="Clear chat"><i class="fa fa-trash-alt"></i></button>
+      <button class="mhdr-btn" onclick="toggleMedi()" title="Close"><i class="fa fa-times"></i></button>
+    </div>
+  </div>
+
+  <!-- Quick action chips -->
+  <div class="mchips" id="mchips">
+    <button class="mchip mchip-blue" onclick="handleMCmd('Show my cart')"><i class="fa fa-shopping-cart"></i> My Cart</button>
+    <button class="mchip mchip-green" onclick="handleMCmd('Add Paracetamol')"><i class="fa fa-plus"></i> Add Item</button>
+    <button class="mchip mchip-violet" onclick="handleMCmd('Fill checkout form')"><i class="fa fa-magic"></i> Fill Form</button>
+    <button class="mchip mchip-amber" onclick="handleMCmd('My orders')"><i class="fa fa-box"></i> My Orders</button>
+    <button class="mchip mchip-pink" onclick="handleMCmd('Health tip')"><i class="fa fa-heartbeat"></i> Health Tip</button>
+  </div>
+
+  <div class="mchat" id="mchat"></div>
+  <div class="msugs" id="msugs"></div>
+
+  <div class="mir">
+    <button id="vbtn" class="msnd msnd-voice" onclick="startVoice()" title="Voice input">
+      <i class="fa fa-microphone"></i>
+    </button>
+    <input type="text" class="mi" id="minp" placeholder="Type a command or ask anything…" onkeydown="if(event.key==='Enter')sendMedi()" autocomplete="off">
+    <button class="msnd msnd-send" onclick="sendMedi()" title="Send">
+      <i class="fa fa-paper-plane"></i>
+    </button>
+  </div>
+  <div class="mhint">Try: "add vitamin c 2" · "fill checkout form" · "my orders"</div>
+</div>
+
+<script>
+// ══ PRODUCTS DATA (for bot product lookup) ══
+const MEDI_PRODUCTS = [
+  {id:1,name:'Paracetamol 500mg',cat:'Pain Relief',price:45,tags:'pain fever headache paracetamol analgesic'},
+  {id:2,name:'Vitamin D3 60K IU',cat:'Vitamins',price:180,tags:'vitamin d3 bones immunity supplement'},
+  {id:3,name:'Omeprazole 20mg',cat:'Gastro',price:95,tags:'acidity gastric ulcer omeprazole stomach'},
+  {id:4,name:'Cetirizine 10mg',cat:'Allergy',price:35,tags:'allergy cold sneezing antihistamine cetirizine'},
+  {id:5,name:'Metformin 500mg',cat:'Diabetes',price:60,tags:'diabetes sugar glucose metformin insulin'},
+  {id:6,name:'Atorvastatin 10mg',cat:'Cardiac',price:120,tags:'cholesterol cardiac heart statin atorvastatin'},
+  {id:7,name:'Azithromycin 500mg',cat:'Antibiotic',price:145,tags:'antibiotic infection bacterial azithromycin'},
+  {id:8,name:'BP Monitor Digital',cat:'Devices',price:1850,tags:'blood pressure monitor bp digital device'},
+  {id:9,name:'Pulse Oximeter',cat:'Devices',price:950,tags:'oxygen spo2 oximeter pulse device'},
+  {id:10,name:'Glucometer Kit',cat:'Diabetes',price:1200,tags:'glucose glucometer diabetes sugar test kit'},
+  {id:11,name:'Vitamin C 1000mg',cat:'Vitamins',price:320,tags:'vitamin c immunity supplement ascorbic'},
+  {id:12,name:'Fish Oil Omega-3',cat:'Supplements',price:480,tags:'omega3 fish oil heart brain supplement'},
+  {id:13,name:'Ibuprofen 400mg',cat:'Pain Relief',price:55,tags:'pain ibuprofen anti-inflammatory nsaid'},
+  {id:14,name:'Insulin Glargine',cat:'Diabetes',price:850,tags:'insulin diabetes type1 type2 glargine'},
+  {id:15,name:'Thermometer Digital',cat:'Devices',price:380,tags:'thermometer temperature fever digital'},
+  {id:16,name:'CeraVe Moisturizer',cat:'Skincare',price:680,tags:'moisturizer dry skin ceramide dermatology'},
+  {id:17,name:'Baby Rash Cream',cat:'Baby Care',price:180,tags:'baby rash diaper cream infant child pediatric'},
+  {id:18,name:'Gripe Water',cat:'Baby Care',price:120,tags:'baby colic gripe infant child pediatric'},
+  {id:19,name:'N95 Mask Pack 10',cat:'Surgical',price:350,tags:'mask N95 protection surgical'},
+  {id:20,name:'Surgical Gloves 100pcs',cat:'Surgical',price:280,tags:'gloves surgical latex examination'},
+];
+
+const MEDI_DOCTORS = [
+  {id:1,name:'Priya Sharma',dept:'Cardiology',spec:'Cardiologist'},
+  {id:2,name:'Arjun Mehta',dept:'Dermatology',spec:'Dermatologist'},
+  {id:3,name:'Sunita Patel',dept:'Pediatrics',spec:'Pediatrician'},
+  {id:4,name:'Rahul Verma',dept:'Orthopedics',spec:'Orthopedist'},
+  {id:5,name:'Kavita Reddy',dept:'Neurology',spec:'Neurologist'},
+  {id:6,name:'Anil Kumar',dept:'Endocrinology',spec:'Endocrinologist'},
+  {id:7,name:'Meera Joshi',dept:'Gastroenterology',spec:'Gastroenterologist'},
+  {id:8,name:'Vikram Singh',dept:'Pulmonology',spec:'Pulmonologist'},
+  {id:9,name:'Nandini Iyer',dept:'Oncology',spec:'Oncologist'},
+  {id:10,name:'Suresh Nair',dept:'Psychiatry',spec:'Psychiatrist'},
+  {id:11,name:'Deepa Gupta',dept:'Ophthalmology',spec:'Ophthalmologist'},
+  {id:12,name:'Rajan Pillai',dept:'ENT',spec:'ENT Specialist'},
+];
+
+const HEALTH_TIPS = [
+  "💧 Drink at least 8 glasses of water daily. Hydration improves metabolism, skin health and cognitive function.",
+  "🚶 30 minutes of brisk walking daily reduces risk of heart disease by up to 35%. Start small — even 10 minutes helps!",
+  "😴 Adults need 7–9 hours of sleep. Poor sleep is linked to obesity, diabetes and heart disease.",
+  "🥗 Eat the rainbow! Colourful vegetables provide diverse antioxidants that protect cells from damage.",
+  "🧘 5 minutes of deep breathing reduces cortisol (stress hormone) significantly. Try box breathing: inhale 4s, hold 4s, exhale 4s.",
+  "🩺 Regular health checkups catch problems early. Schedule a complete blood count annually after age 30.",
+  "🚭 Quitting smoking reduces stroke risk to normal levels within 5 years. It's never too late to quit.",
+  "☀️ 15 minutes of morning sunlight regulates your circadian rhythm and boosts Vitamin D production.",
+  "🦷 Oral health is linked to heart health. Brush twice, floss daily — bacteria in gums can reach the heart.",
+  "📵 Reduce screen time 1 hour before bed. Blue light suppresses melatonin and delays sleep onset by ~90 minutes.",
+];
+
+// Sample autofill data for forms
+const AUTOFILL_DATA = {
+  health: {age:'35',bmi:'24.5',bps:'120',bpd:'80',glc:'95',chol:'180',hr:'72',smk:'0',dia:'0',fam:'0',act:'moderate'},
+  checkout: {full_name:'Rahul Sharma',phone:'+91 98765 43210',address:'Flat 12, Sunshine Apartments, Near City Mall',city:'Ahmedabad',pin_code:'380001'},
+  appointment: {patient_name:'Rahul Sharma',patient_phone:'+91 98765 43210',reason:'Regular health checkup and consultation'},
+  signup: {full_name:'Rahul Sharma',email:'rahul.sharma@example.com'},
+};
+
+// ══ CSRF & API ══
+function getCsrf(){const m=document.cookie.match(/csrftoken=([^;]+)/);return m?m[1]:'';}
+async function apiPost(url,body){const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':getCsrf()},credentials:'same-origin',body:JSON.stringify(body)});return r.json();}
+async function apiGet(url){const r=await fetch(url,{credentials:'same-origin'});return r.json();}
+
+// ══ CART BADGE ══
+async function loadCartBadge(){
+  try{const r=await apiGet('/api/cart/');
+  if(r.ok){const qty=r.data.reduce((s,i)=>s+i.qty,0);document.getElementById('cBadge').textContent=qty;}}catch(e){}
+}
+
+// ══ ADD TO CART ══
+async function addToCart(pid,qty=1){
+  const r=await apiPost('/api/cart/add/',{id:pid,qty:qty});
+  if(r.ok){
+    document.getElementById('cBadge').textContent=r.data.total_qty;
+    toast('Added to cart 🛒','success');
+  }else toast(r.error||'Error adding to cart','error');
+}
+
+// ══ TOAST ══
+function toast(msg,type='success'){
+  const ic={success:'fa-check-circle',error:'fa-times-circle',warning:'fa-exclamation-triangle',info:'fa-info-circle'};
+  const w=document.getElementById('twrap');
+  const t=document.createElement('div');t.className=`toast ${type}`;
+  t.innerHTML=`<i class="fa ${ic[type]||ic.info}" style="flex-shrink:0"></i><span>${msg}</span><button onclick="this.parentElement.remove()" style="background:none;border:none;cursor:pointer;margin-left:auto;color:inherit;opacity:.6"><i class="fa fa-times"></i></button>`;
+  w.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(24px)';t.style.transition='.3s';setTimeout(()=>t.remove(),300);},4000);
+}
+
+// ══ GLOBAL SEARCH ══
+document.getElementById('gSrch')?.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.value.trim())window.location='/shop/?q='+encodeURIComponent(e.target.value.trim());
+});
+
+// ══ AI CURSOR ══
+function moveCursor(x,y,label='AI Acting'){const c=document.getElementById('aiCursor');if(!c)return;c.querySelector('.cur-label').textContent=label;c.style.display='block';c.style.left=(x-14)+'px';c.style.top=(y-14)+'px';}
+function hideCursor(){const c=document.getElementById('aiCursor');if(c)c.style.display='none';}
+function botHighlight(el){el.classList.add('bot-highlight');setTimeout(()=>el.classList.remove('bot-highlight'),900);}
+function botTypeInto(el,text,onDone){
+  el.focus();botHighlight(el);el.value='';
+  const chars=[...text];let i=0;
+  const iv=setInterval(()=>{
+    if(i>=chars.length){clearInterval(iv);el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));if(onDone)onDone();return;}
+    el.value+=chars[i++];el.dispatchEvent(new Event('input',{bubbles:true}));
+  },38);
+}
+function botClick(el,label='Clicking'){
+  const r=el.getBoundingClientRect();
+  moveCursor(r.left+r.width/2,r.top+r.height/2,label);
+  botHighlight(el);setTimeout(()=>{el.click();hideCursor();},450);
+}
+function selectOption(el,value){
+  el.value=value;el.dispatchEvent(new Event('change',{bubbles:true}));botHighlight(el);
+}
+
+// ══ PRODUCT SEARCH HELPER ══
+function findProduct(query){
+  const q=query.toLowerCase();
+  let best=null,bestScore=0;
+  for(const p of MEDI_PRODUCTS){
+    let score=0;
+    const n=p.name.toLowerCase();const tg=p.tags.toLowerCase();
+    if(n===q)score=100;
+    else if(n.startsWith(q))score=80;
+    else if(n.includes(q))score=60;
+    else{
+      const words=q.split(' ');
+      words.forEach(w=>{if(w.length>2){if(n.includes(w))score+=40;if(tg.includes(w))score+=20;}});
+    }
+    if(score>bestScore){bestScore=score;best=p;}
+  }
+  return bestScore>10?best:null;
+}
+
+function findDoctor(query){
+  const q=query.toLowerCase();
+  return MEDI_DOCTORS.find(d=>
+    d.name.toLowerCase().includes(q)||
+    d.dept.toLowerCase().includes(q)||
+    d.spec.toLowerCase().includes(q)
+  );
+}
+
+// ══ MEDI BOT STATE ══
+let mediOpen=false,mHist=[],recog=null;
+
+const MSUGS_DEF=['Add Paracetamol','My Cart','My Orders','Book Dr Priya','Open Shop','Open Doctors','Check Sentiment','About Me'];
+
+function toggleMedi(){
+  mediOpen=!mediOpen;
+  document.getElementById('mp').classList.toggle('open',mediOpen);
+  document.getElementById('medi-btn').classList.toggle('active',mediOpen);
+  if(mediOpen&&!mHist.length){
+    setTimeout(()=>{
+      addMsg('bot','👋 Hi! I\'m <strong>Medi AI</strong> — your smart healthcare assistant!<br><br>🛒 <b>Cart</b> — "add paracetamol", "my cart", "clear cart"<br>👨‍⚕️ <b>Doctors</b> — "book Dr Priya", "open doctors"<br>🔍 <b>Search</b> — "search vitamin c"<br>🧠 <b>Navigate</b> — "open shop", "open sentiment", "about me"<br>📦 <b>Orders</b> — "my orders", "my appointments"<br>💬 <b>Voice</b> — tap the mic!<br><br>What can I help with today?',true);
+      renderMsugs(MSUGS_DEF);
+    },300);
+  }
+}
+
+function clearChat(){
+  mHist=[];document.getElementById('mchat').innerHTML='';
+  addMsg('bot','Chat cleared! How can I help you? 😊',true);
+  renderMsugs(MSUGS_DEF);
+}
+
+function addMsg(who,html,isHtml=false){
+  const c=document.getElementById('mchat');
+  const d=document.createElement('div');d.className=`mmsg ${who}`;
+  if(isHtml)d.innerHTML=html;else d.textContent=html;
+  c.appendChild(d);c.scrollTop=c.scrollHeight;
+  mHist.push({who,text:isHtml?d.textContent:html});
+}
+
+function addThinking(){
+  const c=document.getElementById('mchat');
+  const th=document.createElement('div');th.className='mmsg thinking';th.id='mthink';
+  th.innerHTML='<span class="mw"><span></span><span></span><span></span><span></span></span>';
+  c.appendChild(th);c.scrollTop=c.scrollHeight;
+}
+function removeThinking(){const t=document.getElementById('mthink');if(t)t.remove();}
+
+function renderMsugs(s){
+  document.getElementById('msugs').innerHTML=s.map(x=>`<button class="msug" onclick="handleMCmd('${x.replace(/'/g,"\\'")}')">${x}</button>`).join('');
+}
+
+function sendMedi(){const i=document.getElementById('minp');const t=i.value.trim();if(!t)return;i.value='';addMsg('usr',t);processMedi(t);}
+function handleMCmd(c){addMsg('usr',c);processMedi(c);}
+
+function setStatus(txt){const el=document.getElementById('mst');if(el)el.innerHTML=`<span class="mst-dot"></span>${txt}`;}
+
+// ══ SPEAK REPLY ══
+function speakReply(text){
+  if(!('speechSynthesis' in window))return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text.replace(/<[^>]+>/g,'').replace(/[🤖👋🛒👨‍⚕️❤️🔬📊📋📦✅⚠️🚨🎉💊💉🌡️🩺😊📝]/g,''));
+  u.rate=1.05;u.pitch=1.1;u.lang='en-IN';
+  window.speechSynthesis.speak(u);
+}
+
+// ══ MAIN PROCESS FUNCTION ══
+async function processMedi(text){
+  const t=text.toLowerCase().trim();
+  setStatus('Thinking…');
+  addThinking();
+
+  // Delay for natural feel
+  await new Promise(r=>setTimeout(r,650));
+  removeThinking();
+  setStatus('Online · Ready');
+
+  // ── NAVIGATION ──
+  if((t.includes('open')||t.includes('go to')||t.includes('take me'))&&!t.includes('form')){
+    if(t.includes('shop')||t.includes('medicine')){
+      addMsg('bot','Opening Medicine Shop 🛒',true);speakReply('Opening shop');
+      setTimeout(()=>window.location='/shop/',500);return;
+    }
+    if(t.includes('doctor')||t.includes('specialist')){
+      addMsg('bot','Opening Doctors page 👨‍⚕️',true);
+      setTimeout(()=>window.location='/doctors/',500);return;
+    }
+    if(t.includes('skin')||t.includes('vit')){
+      addMsg('bot','Opening Skin ViT Analysis...',true);
+      setTimeout(()=>window.location='/skin/',500);return;
+    }
+    if(t.includes('sentiment')||t.includes('nlp')||t.includes('check')){
+      addMsg('bot','Opening Check Sentiment...',true);
+      setTimeout(()=>window.location='/sentiment/',500);return;
+    }
+    if(t.includes('about')||t.includes('contact me')||t.includes('portfolio')){
+      addMsg('bot','Opening About & Contact...',true);
+      setTimeout(()=>window.location='/about/',500);return;
+    }
+    if(t.includes('cart')){
+      addMsg('bot','Opening your cart 🛒',true);
+      setTimeout(()=>window.location='/cart/',500);return;
+    }
+    if(t.includes('dashboard')||t.includes('account')){
+      addMsg('bot','Opening Dashboard 📊',true);
+      setTimeout(()=>window.location='/dashboard/',500);return;
+    }
+    if(t.includes('ai')||t.includes('ml')||t.includes('deep')){
+      addMsg('bot','Opening AI/ML page 🧠',true);
+      setTimeout(()=>window.location='/ai-ml/',500);return;
+    }
+    if(t.includes('checkout')){
+      addMsg('bot','Going to Checkout 💳',true);
+      setTimeout(()=>window.location='/checkout/',500);return;
+    }
+    if(t.includes('home')){
+      addMsg('bot','Taking you home 🏠',true);
+      setTimeout(()=>window.location='/',500);return;
+    }
+  }
+
+  // ── LOGOUT ──
+  if(t.includes('logout')||t.includes('sign out')||t.includes('signout')){
+    addMsg('bot','Signing you out… 👋 Goodbye!',true);speakReply('Goodbye!');
+    setTimeout(()=>window.location='/logout/',800);return;
+  }
+
+  // ── ADD PRODUCT TO CART ──
+  if(t.match(/^(add|put|buy|order)\b/)){
+    // Extract quantity: "add paracetamol 2" or "add 2 vitamin c"
+    let qty=1;
+    const qMatch=t.match(/\b(\d+)\b/);if(qMatch)qty=parseInt(qMatch[1]);
+    const query=t.replace(/^(add|put|buy|order)\s+/,'').replace(/\b\d+\b/g,'').replace(/\bto\s+cart\b/g,'').trim();
+    const prod=findProduct(query);
+    if(prod){
+      setStatus('Adding to cart…');
+      try{
+        const r=await apiPost('/api/cart/add/',{id:prod.id,qty:qty});
+        if(r.ok){
+          document.getElementById('cBadge').textContent=r.data.total_qty;
+          addMsg('bot',`✅ Added <b>${qty}x ${prod.name}</b> to your cart!<br>💰 Price: ₹${prod.price*qty}<br><br><button class="mbot-btn" onclick="window.location='/cart/'">View Cart 🛒</button>`,true);
+          speakReply(`Added ${prod.name} to cart`);
+          renderMsugs(['View Cart','Add more','Remove '+prod.name,'Continue Shopping']);
+        }else addMsg('bot','❌ Could not add to cart: '+(r.error||'Unknown error'),true);
+      }catch(e){addMsg('bot','❌ Network error. Please try again.',true);}
+    }else{
+      addMsg('bot',`🔍 I couldn't find "<b>${query}</b>" in our products.<br><br>Try searching: <button class="mbot-btn" onclick="window.location='/shop/?q=${encodeURIComponent(query)}'">Search in Shop →</button>`,true);
+      renderMsugs(['Open Shop','Search Paracetamol','Search Vitamins']);
+    }
+    return;
+  }
+
+  // ── REMOVE PRODUCT FROM CART ──
+  if(t.match(/^(remove|delete|take out|drop)\b/)&&!t.includes('form')){
+    const query=t.replace(/^(remove|delete|take out|drop)\s+/,'').replace(/\bfrom\s+cart\b/g,'').trim();
+    const prod=findProduct(query);
+    if(prod){
+      setStatus('Removing from cart…');
+      try{
+        const r=await apiPost('/api/cart/remove/',{id:prod.id});
+        if(r.ok){
+          document.getElementById('cBadge').textContent=r.data.reduce((s,i)=>s+i.qty,0);
+          addMsg('bot',`🗑️ Removed <b>${prod.name}</b> from your cart.`,true);
+          renderMsugs(['View Cart','My Cart Summary','Continue Shopping']);
+        }else addMsg('bot','❌ Could not remove: '+(r.error||'Unknown error'),true);
+      }catch(e){addMsg('bot','❌ Network error.',true);}
+    }else{
+      addMsg('bot',`❓ Couldn't find "<b>${query}</b>" in your cart. Type "my cart" to see what's in it.`,true);
+    }
+    return;
+  }
+
+  // ── UPDATE QUANTITY ──
+  if(t.match(/^(set|change|update|make)\b.*\bto\b.*\d/)||t.match(/^(increase|decrease|add more|reduce)\b/)){
+    let qty=null;const qMatch=t.match(/\b(\d+)\b/);if(qMatch)qty=parseInt(qMatch[1]);
+    const isInc=t.includes('increase')||t.includes('add more')||t.includes('more');
+    const isDec=t.includes('decrease')||t.includes('reduce')||t.includes('less');
+    const query=t.replace(/^(set|change|update|make|increase|decrease|add more|reduce)\s+/,'').replace(/\bto\s+\d+\b/,'').replace(/\b\d+\b/g,'').replace(/\b(more|less|by)\b/g,'').trim();
+    const prod=findProduct(query||'');
+    if(prod){
+      setStatus('Updating cart…');
+      try{
+        const cartR=await apiGet('/api/cart/');
+        if(cartR.ok){
+          const item=cartR.data.find(i=>i.id===prod.id);
+          let newQty=qty||1;
+          if(item){
+            if(isInc)newQty=(item.qty||1)+(qty||1);
+            else if(isDec)newQty=Math.max(1,(item.qty||1)-(qty||1));
+            else if(qty)newQty=qty;
+          }
+          const r=await apiPost('/api/cart/update/',{id:prod.id,qty:newQty});
+          if(r.ok){
+            document.getElementById('cBadge').textContent=r.data.reduce((s,i)=>s+i.qty,0);
+            addMsg('bot',`✅ Updated <b>${prod.name}</b> quantity to <b>${newQty}</b>.`,true);
+            renderMsugs(['View Cart','My Cart Summary','Continue Shopping']);
+          }else addMsg('bot','❌ Could not update: '+(r.error||'Item not in cart. Add it first!'),true);
+        }
+      }catch(e){addMsg('bot','❌ Network error.',true);}
+    }else{
+      addMsg('bot','❓ Which product would you like to update? Try "set paracetamol to 3"',true);
+    }
+    return;
+  }
+
+  // ── MY CART SUMMARY ──
+  if(t.includes('my cart')||t.includes('cart summary')||t.includes('what\'s in')||t.includes('show cart')||t.includes('view cart')){
+    setStatus('Loading cart…');
+    try{
+      const r=await apiGet('/api/cart/');
+      if(r.ok){
+        if(!r.data.length){
+          addMsg('bot','🛒 Your cart is empty!<br><br><button class="mbot-btn" onclick="window.location=\'/shop/\'">Browse Products →</button>',true);
+          return;
+        }
+        let total=0;
+        let html='🛒 <b>Your Cart</b><br><br>';
+        for(const item of r.data){
+          const p=MEDI_PRODUCTS.find(x=>x.id===item.id);
+          if(p){total+=p.price*item.qty;html+=`• ${p.name} × ${item.qty} — ₹${p.price*item.qty}<br>`;}
+        }
+        html+=`<br><b>Total: ₹${total.toFixed(0)}</b><br><br><button class="mbot-btn" onclick="window.location='/cart/'">Open Cart →</button>`;
+        document.getElementById('cBadge').textContent=r.data.reduce((s,i)=>s+i.qty,0);
+        addMsg('bot',html,true);
+        speakReply(`Your cart has ${r.data.reduce((s,i)=>s+i.qty,0)} items worth rupees ${total.toFixed(0)}`);
+        renderMsugs(['Checkout','Clear Cart','Continue Shopping']);
+      }
+    }catch(e){addMsg('bot','❌ Could not load cart.',true);}
+    return;
+  }
+
+  // ── CLEAR CART ──
+  if(t.includes('clear cart')||t.includes('empty cart')){
+    try{
+      const r=await apiPost('/api/cart/',{items:[]});
+      if(r.ok){document.getElementById('cBadge').textContent=0;addMsg('bot','🗑️ Cart cleared successfully!',true);}
+    }catch(e){addMsg('bot','❌ Could not clear cart.',true);}
+    return;
+  }
+
+  // ── MY ORDERS ──
+  if(t.includes('my order')||t.includes('order history')||t.includes('past order')||t.includes('recent order')){
+    setStatus('Loading orders…');
+    try{
+      const r=await apiGet('/api/orders/');
+      if(r.ok){
+        if(!r.data.length){
+          addMsg('bot','📦 You have no orders yet!<br><br><button class="mbot-btn" onclick="window.location=\'/shop/\'">Start Shopping →</button>',true);
+          return;
+        }
+        let html=`📦 <b>Your Last ${Math.min(3,r.data.length)} Orders</b><br><br>`;
+        r.data.slice(0,3).forEach(o=>{
+          html+=`<b>${o.order_ref}</b><br>₹${parseFloat(o.total).toFixed(0)} · ${o.status} · ${o.date}<br><br>`;
+        });
+        html+=`<button class="mbot-btn" onclick="window.location='/dashboard/'">All Orders in Dashboard →</button>`;
+        addMsg('bot',html,true);
+        renderMsugs(['My Appointments','My Cart','Continue Shopping']);
+      }
+    }catch(e){addMsg('bot','❌ Could not load orders.',true);}
+    return;
+  }
+
+  // ── MY APPOINTMENTS ──
+  if(t.includes('my appointment')||t.includes('appointment list')||t.includes('booked doctor')){
+    setStatus('Loading appointments…');
+    try{
+      const r=await apiGet('/api/appointments/');
+      if(r.ok){
+        if(!r.data.length){
+          addMsg('bot','📅 No appointments booked yet.<br><br><button class="mbot-btn" onclick="window.location=\'/doctors/\'">Book a Doctor →</button>',true);
+          return;
+        }
+        let html=`📅 <b>Your Appointments</b><br><br>`;
+        r.data.slice(0,3).forEach(a=>{
+          html+=`<b>Dr. ${a.dr_name}</b> (${a.dept})<br>${a.date} at ${a.time}<br>Status: ${a.status}<br><br>`;
+        });
+        html+=`<button class="mbot-btn" onclick="window.location='/dashboard/'">View All →</button>`;
+        addMsg('bot',html,true);
+        renderMsugs(['Book new appointment','Find Doctors','My Orders']);
+      }
+    }catch(e){addMsg('bot','❌ Could not load appointments.',true);}
+    return;
+  }
+
+  // ── BOOK APPOINTMENT ──
+  if(t.match(/^(book|see|visit|consult|appointment with)\b/)||t.includes('book appointment')){
+    const query=t.replace(/^(book|see|visit|consult)\s+(an?\s+)?(appointment\s+)?(with\s+)?(dr\.?\s+)?/i,'').replace(/appointment/g,'').trim();
+    const doc=findDoctor(query||(t.includes('cardiolog')?'cardiology':t.includes('dermatolog')?'dermatology':''));
+    if(doc){
+      addMsg('bot',`👨‍⚕️ Booking appointment with <b>Dr. ${doc.name}</b> (${doc.spec})<br><br>Taking you to the booking page…`,true);
+      setTimeout(()=>window.location=`/doctors/${doc.id}/book/`,800);
+    }else{
+      addMsg('bot',`👨‍⚕️ I can help book an appointment! Which doctor or department?<br><br>Available: Cardiology, Dermatology, Pediatrics, Neurology, Orthopedics, and more.<br><br><button class="mbot-btn" onclick="window.location='/doctors/'">Browse All Doctors →</button>`,true);
+      renderMsugs(['Book Dr Priya','Book Dermatologist','Book Cardiologist','All Doctors']);
+    }
+    return;
+  }
+
+  // ── SEARCH PRODUCTS ──
+  if(t.startsWith('search')||t.startsWith('find product')||t.startsWith('look for')){
+    const query=t.replace(/^(search|find product|look for)\s+/,'').trim();
+    if(query){
+      addMsg('bot',`🔍 Searching for <b>"${query}"</b>…`,true);
+      setTimeout(()=>window.location=`/shop/?q=${encodeURIComponent(query)}`,600);
+    }else{
+      addMsg('bot','What would you like to search for? Type "search vitamin c" for example.',true);
+    }
+    return;
+  }
+
+  // ── AUTO FILL FORMS ──
+  if(t.includes('fill')&&t.includes('form')||t.includes('autofill')||t.includes('auto fill')){
+
+    // ── HEALTH FORM ──
+    if(false&&t.includes('risk_disabled')){
+      const path=window.location.pathname;
+      if(!path.includes('health')){
+        addMsg('bot','📝 Taking you to the Health Risk form to auto-fill it…',true);
+        sessionStorage.setItem('medi_autofill','health');
+        setTimeout(()=>window.location='/health/',500);return;
+      }
+      addMsg('bot','📝 Auto-filling the <b>Health Risk</b> form for you…',true);
+      const d=AUTOFILL_DATA.health;
+      const fillSeq=[
+        ['age',d.age],['bmi',d.bmi],['bps',d.bps],['bpd',d.bpd],
+        ['glc',d.glc],['chol',d.chol],['hr',d.hr]
+      ];
+      let delay=400;
+      fillSeq.forEach(([name,val])=>{
+        setTimeout(()=>{
+          const el=document.querySelector(`[name="${name}"]`);
+          if(el){
+            const pos={x:el.getBoundingClientRect().left+el.offsetWidth/2,y:el.getBoundingClientRect().top+el.offsetHeight/2};
+            moveCursor(pos.x,pos.y,'Typing '+name);
+            botTypeInto(el,val);
+          }
+        },delay);delay+=500;
+      });
+      // Select dropdowns
+      setTimeout(()=>{
+        const actEl=document.querySelector('[name="act"]');
+        if(actEl){selectOption(actEl,'moderate');}
+        const smkEl=document.querySelector('[name="smk"]');
+        if(smkEl)selectOption(smkEl,'0');
+        hideCursor();
+        addMsg('bot','✅ Health form filled! Review and click <b>Calculate Risk</b> to see your health score.',true);
+        speakReply('Health form filled successfully');
+        renderMsugs(['Submit Health Form','Clear Form','Open Shop']);
+      },delay+400);
+      return;
+    }
+
+    // ── CHECKOUT FORM ──
+    if(t.includes('checkout')||t.includes('payment')||t.includes('delivery')){
+      const path=window.location.pathname;
+      if(!path.includes('checkout')){
+        addMsg('bot','📝 Taking you to Checkout to auto-fill…',true);
+        sessionStorage.setItem('medi_autofill','checkout');
+        setTimeout(()=>window.location='/checkout/',500);return;
+      }
+      addMsg('bot','📝 Auto-filling the <b>Checkout</b> form…',true);
+      const d=AUTOFILL_DATA.checkout;
+      const fields=[['#co_nm',d.full_name],['#co_ph',d.phone],['#co_ad',d.address],['#co_ct',d.city],['#co_pn',d.pin_code]];
+      let delay=300;
+      fields.forEach(([sel,val])=>{
+        setTimeout(()=>{
+          const el=document.querySelector(sel);
+          if(el){
+            el.scrollIntoView({behavior:'smooth',block:'center'});
+            const pos={x:el.getBoundingClientRect().left+el.offsetWidth/2,y:el.getBoundingClientRect().top+8};
+            moveCursor(pos.x,pos.y,'Filling…');
+            botTypeInto(el,val);
+          }
+        },delay);delay+=600;
+      });
+      setTimeout(()=>{
+        const upi=document.querySelector('[name="payment_method"][value="upi"]');
+        if(upi)botClick(upi,'Selecting UPI');
+        hideCursor();
+        addMsg('bot','✅ Checkout form filled! Review your details and click <b>Place Order</b>.',true);
+        speakReply('Checkout form filled');
+        renderMsugs(['Place Order','Edit Details','Continue Shopping']);
+      },delay+400);
+      return;
+    }
+
+    // ── APPOINTMENT FORM ──
+    if(t.includes('appointment')||t.includes('doctor')||t.includes('booking')){
+      const path=window.location.pathname;
+      if(!path.includes('book')){
+        addMsg('bot','📝 Please go to a doctor booking page first. Let me take you there…<br><br><button class="mbot-btn" onclick="window.location=\'/doctors/\'">Choose a Doctor →</button>',true);return;
+      }
+      addMsg('bot','📝 Auto-filling the <b>Appointment</b> form…',true);
+      const d=AUTOFILL_DATA.appointment;
+      const fields=[['[name="patient_name"]',d.patient_name],['[name="patient_phone"]',d.patient_phone],['[name="reason"]',d.reason]];
+      let delay=300;
+      fields.forEach(([sel,val])=>{
+        setTimeout(()=>{
+          const el=document.querySelector(sel);
+          if(el){el.scrollIntoView({behavior:'smooth',block:'center'});
+          moveCursor(el.getBoundingClientRect().left+50,el.getBoundingClientRect().top+10,'Filling…');
+          botTypeInto(el,val);}
+        },delay);delay+=700;
+      });
+      // Pick first available date & slot
+      setTimeout(()=>{
+        const dateEl=document.querySelector('[name="appt_date"]');
+        if(dateEl){const d2=new Date();d2.setDate(d2.getDate()+2);dateEl.value=d2.toISOString().split('T')[0];botHighlight(dateEl);}
+        const slotEl=document.querySelector('[name="time_slot"]');
+        if(slotEl&&slotEl.options.length>1){slotEl.selectedIndex=1;botHighlight(slotEl);}
+        hideCursor();
+        addMsg('bot','✅ Appointment form filled! Review and click <b>Confirm Appointment</b>.',true);
+        speakReply('Appointment form filled');
+        renderMsugs(['Confirm Appointment','Choose Different Doctor','My Appointments']);
+      },delay+400);
+      return;
+    }
+
+    // ── SIGNUP FORM ──
+    if(t.includes('signup')||t.includes('register')||t.includes('sign up')){
+      const path=window.location.pathname;
+      if(!path.includes('signup')){
+        addMsg('bot','📝 Taking you to the signup page…',true);
+        sessionStorage.setItem('medi_autofill','signup');
+        setTimeout(()=>window.location='/signup/',500);return;
+      }
+      addMsg('bot','📝 Auto-filling the <b>Signup</b> form…',true);
+      const fields=[['[name="full_name"]',AUTOFILL_DATA.signup.full_name],['[name="email"]',AUTOFILL_DATA.signup.email]];
+      let delay=300;
+      fields.forEach(([sel,val])=>{
+        setTimeout(()=>{
+          const el=document.querySelector(sel);
+          if(el){moveCursor(el.getBoundingClientRect().left+50,el.getBoundingClientRect().top+8,'Filling…');botTypeInto(el,val);}
+        },delay);delay+=600;
+      });
+      setTimeout(()=>{hideCursor();addMsg('bot','✅ Signup form partially filled. You\'ll need to add your own password.',true);},delay+300);
+      return;
+    }
+
+    // Generic form fill message
+    addMsg('bot','📝 I can auto-fill these forms for you:<br><br>• <b>Checkout form</b> — "fill checkout form"<br>• <b>Appointment form</b> — "fill appointment form"<br><br>Just say which one!',true);
+    renderMsugs(['Fill checkout form','Fill appointment form']);
+    return;
+  }
+
+  // ── HEALTH TIP ──
+  if(t.includes('health tip')||t.includes('tip')||t.includes('advice')||t.includes('suggest')){
+    const tip=HEALTH_TIPS[Math.floor(Math.random()*HEALTH_TIPS.length)];
+    addMsg('bot',`<b>💡 Health Tip of the moment:</b><br><br>${tip}`,true);
+    speakReply(tip.replace(/[💧🚶😴🥗🧘🩺🚭☀️🦷📵💡]/g,''));
+    renderMsugs(['Another tip','Open Health AI','Open Shop','My Cart']);
+    return;
+  }
+
+  // ── PRICE CHECK ──
+  if(t.includes('price')||t.includes('cost')||t.includes('how much')){
+    const query=t.replace(/price|cost|how much|is|of|for/g,'').trim();
+    const prod=findProduct(query);
+    if(prod){
+      addMsg('bot',`💰 <b>${prod.name}</b><br>Price: ₹${prod.price}<br>Category: ${prod.cat}<br><br><button class="mbot-btn" onclick="window.location='/shop/'">View in Shop →</button>`,true);
+    }else{
+      addMsg('bot',`💰 Couldn't find that product. Try "price paracetamol" or "cost vitamin c"`,true);
+    }
+    return;
+  }
+
+  // ── GREETINGS ──
+  if(t.match(/^(hi|hello|hey|good morning|good evening|good afternoon|namaste|helo|hii)\b/)){
+    const hour=new Date().getHours();
+    const greet=hour<12?'Good Morning ☀️':hour<17?'Good Afternoon 🌤️':'Good Evening 🌙';
+    addMsg('bot',`${greet}! I'm Medi AI, your health assistant.<br><br>What can I help you with today?`,true);
+    renderMsugs(MSUGS_DEF);
+    return;
+  }
+
+  // ── HELP ──
+  if(t.includes('help')||t.includes('what can you do')||t.includes('commands')){
+    addMsg('bot',`🤖 <b>Medi AI Commands:</b><br><br>🛒 <b>Cart:</b><br>• add paracetamol 2<br>• remove vitamin c<br>• my cart / clear cart<br><br>📝 <b>Forms:</b><br>• fill checkout form<br>• fill appointment form<br><br>📦 <b>Info:</b><br>• my orders / my appointments<br>• price paracetamol<br><br>🔍 <b>Navigate:</b><br>• open shop / doctors / skin / sentiment / about<br>• search vitamin c<br>• book Dr Priya<br><br>💡 Tips: health tip / advice`,true);
+    renderMsugs(['Add Paracetamol','My Orders','Open Shop','Book Dr Priya']);
+    return;
+  }
+
+  // ── DEFAULT ──
+  const suggestions=['Show my cart','Add Paracetamol','My orders','Search Vitamin','Book Dr Priya','Open Shop'];
+  addMsg('bot',`🤔 I'm not sure about that. Try:<br>• "add paracetamol" — add to cart<br>• "fill health form" — auto-fill<br>• "my orders" — order history<br>• "health tip" — daily tip<br>• "help" — all commands`,true);
+  renderMsugs(suggestions.slice(0,4));
+}
+
+// ══ CHECK FOR AUTOFILL ON PAGE LOAD ══
+function checkAutofill(){
+  const af=sessionStorage.getItem('medi_autofill');
+  if(af){
+    sessionStorage.removeItem('medi_autofill');
+    setTimeout(()=>{
+      if(!mediOpen)toggleMedi();
+      setTimeout(()=>processMedi(`fill ${af} form`),800);
+    },1000);
+  }
+}
+
+// ══ VOICE INPUT ══
+function startVoice(){
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){
+    toast('Voice requires Chrome browser','warning');return;
+  }
+  if(recog){try{recog.stop();}catch(e){}}
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  recog=new SR();recog.continuous=false;recog.interimResults=false;recog.lang='en-IN';
+  const btn=document.getElementById('medi-btn'),vbtn=document.getElementById('vbtn');
+  recog.onstart=()=>{
+    btn.classList.add('listening');
+    if(vbtn)vbtn.innerHTML='<i class="fa fa-stop"></i>';
+    setStatus('🎤 Listening… speak now');
+    if(!mediOpen)toggleMedi();
+  };
+  recog.onresult=e=>{
+    const t=e.results[0][0].transcript;
+    const inp=document.getElementById('minp');if(inp)inp.value=t;
+    addMsg('usr',t);processMedi(t);
+  };
+  recog.onend=()=>{
+    btn.classList.remove('listening');
+    if(vbtn)vbtn.innerHTML='<i class="fa fa-microphone"></i>';
+    setStatus('Online · Ready');
+  };
+  recog.onerror=()=>{
+    btn.classList.remove('listening');
+    if(vbtn)vbtn.innerHTML='<i class="fa fa-microphone"></i>';
+    toast('Voice error — try again','warning');
+  };
+  recog.start();
+}
+
+// ══ INIT ══
+document.addEventListener('DOMContentLoaded',()=>{
+  loadCartBadge();
+  checkAutofill();
+  document.querySelectorAll('.mov').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
+});
+</script>
+<script src="{% static 'js/main.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.name }}{% endblock %}
+{% block extra_css %}<style>
+.pdp-wrap{max-width:1100px;margin:0 auto;padding:28px 20px 60px}
+.breadcrumb{font-size:.76rem;color:var(--muted);margin-bottom:20px;display:flex;gap:6px;align-items:center}
+.breadcrumb a{color:var(--blue)}
+.pdp-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:36px;align-items:start}
+.pdp-img-box{background:#fff;border:1.5px solid var(--border);border-radius:20px;padding:28px;display:flex;align-items:center;justify-content:center;min-height:280px;position:relative;overflow:hidden}
+.pdp-img{max-width:220px;max-height:220px;object-fit:contain}
+.pdp-badge{position:absolute;padding:4px 12px;border-radius:20px;font-size:.7rem;font-weight:700}
+.pdp-info{background:#fff;border:1.5px solid var(--border);border-radius:20px;padding:28px}
+.pdp-cat{display:inline-block;background:#eff6ff;color:var(--blue);padding:4px 12px;border-radius:20px;font-size:.72rem;font-weight:700;margin-bottom:12px}
+.pdp-name{font-size:1.5rem;font-weight:800;font-family:var(--fd);margin-bottom:6px;line-height:1.2}
+.pdp-mfr{font-size:.82rem;color:var(--muted);margin-bottom:16px}
+.pdp-score-bar{background:linear-gradient(135deg,#f0f4ff,#f5f0ff);border:1.5px solid rgba(37,99,235,.1);border-radius:14px;padding:16px;margin-bottom:18px;display:flex;gap:20px;align-items:center}
+.score-block{text-align:center;flex:1}
+.score-num{font-size:1.4rem;font-weight:800;font-family:var(--fd)}
+.score-lbl{font-size:.66rem;color:var(--muted);margin-top:2px}
+.pdp-price{margin-bottom:18px}
+.price-main{font-size:1.7rem;font-weight:800;color:var(--blue);font-family:var(--fd)}
+.price-orig{font-size:.9rem;color:var(--muted);text-decoration:line-through;margin-left:10px}
+.disc-tag{display:inline-block;background:var(--red-l);color:var(--red);padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:700;margin-left:8px}
+.pdp-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;background:var(--surface);border:1px solid var(--border);border-radius:20px;font-size:.74rem;font-weight:600}
+.pdp-btns{display:flex;gap:10px;margin-bottom:20px}
+.btn-add{flex:2;padding:13px;background:var(--grad);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 6px 18px rgba(37,99,235,.3);transition:all .25s}
+.btn-add:hover{transform:translateY(-2px)}
+.btn-cart{flex:1;padding:13px;border:2px solid var(--border);color:var(--ink);border-radius:12px;font-weight:600;font-size:.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;background:#fff;text-decoration:none}
+.btn-cart:hover{border-color:var(--blue);color:var(--blue)}
+/* REVIEWS */
+.reviews-section{background:#fff;border:1.5px solid var(--border);border-radius:20px;padding:24px;margin-top:24px}
+.review-item{padding:14px 16px;border-radius:12px;border:1px solid var(--border);margin-bottom:10px}
+.review-item:last-child{margin-bottom:0}
+.review-stars{color:#f59e0b;font-size:.8rem;margin-bottom:6px}
+.review-text{font-size:.83rem;color:var(--ink2);line-height:1.65}
+.review-author{font-size:.72rem;color:var(--muted);margin-top:6px}
+/* RELATED */
+.related-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.rel-item{display:flex;gap:10px;align-items:center;padding:10px;border:1px solid var(--border);border-radius:12px;text-decoration:none;color:inherit;transition:border-color .2s}
+.rel-item:hover{border-color:var(--blue)}
+.rel-img{width:40px;height:40px;object-fit:contain;border-radius:8px;background:var(--surface);flex-shrink:0}
+@media(max-width:768px){.pdp-grid{grid-template-columns:1fr}.related-grid{grid-template-columns:1fr}}
+</style>{% endblock %}
+{% block content %}
+<div class="pdp-wrap">
+  <div class="breadcrumb">
+    <a href="{% url 'shop' %}">Shop</a> <i class="fa fa-chevron-right" style="font-size:.6rem"></i>
+    <span>{{ product.cat }}</span> <i class="fa fa-chevron-right" style="font-size:.6rem"></i>
+    <span>{{ product.name }}</span>
+  </div>
+
+  <div class="pdp-grid">
+    <!-- IMAGE -->
+    <div>
+      <div class="pdp-img-box">
+        {% if product.rx %}<span class="pdp-badge" style="top:14px;left:14px;background:var(--amber-l);color:var(--amber)"><i class="fa fa-prescription"></i> Rx</span>{% endif %}
+        {% if product.disc > 0 %}<span class="pdp-badge" style="top:14px;right:14px;background:var(--red);color:#fff">{{ product.disc }}% OFF</span>{% endif %}
+        <img class="pdp-img" src="{{ product.img }}" alt="{{ product.name }}" onerror="this.src='https://images.unsplash.com/photo-1550572017-edd951b55104?w=300&q=80'">
+      </div>
+      {% if related %}
+      <div style="margin-top:18px">
+        <div style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px">Similar Products</div>
+        <div class="related-grid">
+          {% for r in related %}
+          <a href="{% url 'product_detail' r.id %}" class="rel-item">
+            <img class="rel-img" src="{{ r.img }}" alt="{{ r.name }}" onerror="this.style.display='none'">
+            <div>
+              <div style="font-size:.78rem;font-weight:700;line-height:1.3">{{ r.name }}</div>
+              <div style="font-size:.7rem;color:var(--blue);font-weight:700;margin-top:2px">₹{{ r.final_price }}</div>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- INFO -->
+    <div class="pdp-info">
+      <span class="pdp-cat">{{ product.cat }}</span>
+      <h1 class="pdp-name">{{ product.name }}</h1>
+      <div class="pdp-mfr">by <strong>{{ product.mfr }}</strong> &nbsp;·&nbsp; {{ product.stock }} units in stock</div>
+
+      <div class="pdp-score-bar">
+        <div class="score-block">
+          <div class="score-num" style="color:var(--blue)">{{ product.nlp_score }}</div>
+          <div class="score-lbl">AI Score</div>
+        </div>
+        <div style="width:1px;height:36px;background:var(--border)"></div>
+        <div class="score-block">
+          <div class="score-num" style="color:#f59e0b">{{ product.rating }}</div>
+          <div class="score-lbl">Rating / 5</div>
+        </div>
+        <div style="width:1px;height:36px;background:var(--border)"></div>
+        <div class="score-block">
+          <div class="score-num" style="color:var(--green)">{{ product.reviews|length }}</div>
+          <div class="score-lbl">Reviews</div>
+        </div>
+      </div>
+
+      <div class="pdp-price">
+        <span class="price-main">₹{{ product.final_price }}</span>
+        {% if product.disc > 0 %}<span class="price-orig">₹{{ product.price }}</span><span class="disc-tag">Save {{ product.disc }}%</span>{% endif %}
+      </div>
+
+      <div class="pdp-chips">
+        <span class="chip"><i class="fa fa-truck" style="color:var(--green);font-size:.7rem"></i> Free delivery ₹299+</span>
+        <span class="chip"><i class="fa fa-undo" style="color:var(--blue);font-size:.7rem"></i> 7-day return</span>
+        {% if not product.rx %}<span class="chip"><i class="fa fa-check" style="color:var(--green);font-size:.7rem"></i> No prescription</span>{% endif %}
+      </div>
+
+      <div class="pdp-btns">
+        <button class="btn-add" onclick="addToCart({{ product.id }},'{{ product.name|escapejs }}')"><i class="fa fa-cart-plus"></i> Add to Cart</button>
+        <a href="{% url 'cart' %}" class="btn-cart"><i class="fa fa-bolt"></i> View Cart</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVIEWS -->
+  <div class="reviews-section">
+    <h3 style="font-size:.95rem;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:8px"><i class="fa fa-comments" style="color:var(--blue)"></i> Customer Reviews</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px">
+      {% for rev in product.reviews %}
+      <div class="review-item">
+        <div class="review-stars">★★★★{% if forloop.counter0|divisibleby:3 %}☆{% else %}★{% endif %}</div>
+        <div class="review-text">{{ rev }}</div>
+        <div class="review-author">Verified Buyer · Review {{ forloop.counter }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<script>
+function getCookie(n){let c=document.cookie.split(';');for(let i of c){let p=i.trim().split('=');if(p[0]===n)return decodeURIComponent(p[1]);}return '';}
+async function addToCart(pid,name){
+  try{
+    const r=await fetch('/api/cart/add/',{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},body:JSON.stringify({product_id:pid,qty:1})});
+    const j=await r.json();
+    if(j.ok){
+      const badge=document.getElementById('cBadge');
+      if(badge) badge.textContent=j.cart_count||'?';
+      showToast('success','Added to cart!');
+    } else showToast('error',j.error||'Error');
+  }catch(e){showToast('error','Network error');}
+}
+function showToast(type,msg){
+  const tw=document.getElementById('twrap');
+  if(!tw) return;
+  const d=document.createElement('div');
+  d.className='toast '+(type==='success'?'success':'error');
+  d.innerHTML=`<i class="fa ${type==='success'?'fa-check-circle':'fa-times-circle'}"></i><span>${msg}</span>`;
+  tw.appendChild(d); setTimeout(()=>d.remove(),3000);
+}
+</script>
+{% endblock %}

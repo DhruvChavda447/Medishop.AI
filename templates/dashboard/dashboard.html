@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block extra_css %}<style>
+.dash-wrap{max-width:1100px;margin:0 auto;padding:32px 20px 60px}
+.user-banner{background:#fff;border:1.5px solid var(--border);border-radius:18px;padding:24px;display:flex;align-items:center;gap:18px;margin-bottom:24px}
+.user-av{width:56px;height:56px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#fff;font-weight:800;font-family:var(--fd);flex-shrink:0;box-shadow:0 6px 18px rgba(37,99,235,.3)}
+.user-name{font-size:1.1rem;font-weight:800;margin-bottom:3px}
+.user-email{font-size:.8rem;color:var(--muted)}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:#fff;border:1.5px solid var(--border);border-radius:16px;padding:18px 20px;display:flex;align-items:center;gap:14px}
+.stat-ic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.stat-num{font-size:1.5rem;font-weight:800;font-family:var(--fd);line-height:1}
+.stat-label{font-size:.72rem;color:var(--muted);margin-top:3px}
+.data-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.data-card{background:#fff;border:1.5px solid var(--border);border-radius:18px;overflow:hidden}
+.data-card-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.data-card-head h3{font-size:.9rem;font-weight:800;display:flex;align-items:center;gap:8px}
+.data-card-body{padding:16px 20px}
+.record-item{padding:12px 14px;border:1px solid var(--border);border-radius:12px;margin-bottom:10px;transition:border-color .15s}
+.record-item:last-child{margin-bottom:0}
+.record-item:hover{border-color:rgba(37,99,235,.3)}
+.record-ref{font-size:.85rem;font-weight:700;margin-bottom:4px}
+.record-meta{font-size:.74rem;color:var(--muted)}
+.status-badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:.65rem;font-weight:700}
+.empty-state{text-align:center;padding:32px 16px;color:var(--muted)}
+.empty-state i{font-size:1.8rem;margin-bottom:10px;display:block;opacity:.3}
+.empty-state p{font-size:.83rem}
+.sign-out-btn{margin-left:auto;padding:8px 18px;border:1.5px solid var(--border);border-radius:10px;font-size:.8rem;font-weight:600;color:var(--muted);background:none;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s}
+.sign-out-btn:hover{border-color:var(--red);color:var(--red)}
+@media(max-width:768px){.stat-grid{grid-template-columns:repeat(2,1fr)}.data-grid{grid-template-columns:1fr}}
+</style>{% endblock %}
+{% block content %}
+<div style="background:#fff;border-bottom:1px solid var(--border);padding:18px 0">
+  <div style="max-width:1100px;margin:0 auto;padding:0 20px">
+    <h1 style="font-size:1.4rem;font-weight:800">Dashboard</h1>
+  </div>
+</div>
+
+<div class="dash-wrap">
+  <!-- USER BANNER -->
+  <div class="user-banner">
+    <div class="user-av">{{ request.user.first_name|first|upper|default:request.user.username|first|upper }}</div>
+    <div>
+      <div class="user-name">{{ request.user.get_full_name|default:request.user.username }}</div>
+      <div class="user-email">{{ request.user.email|default:"No email set" }}</div>
+    </div>
+    <a href="{% url 'logout' %}" class="sign-out-btn"><i class="fa fa-sign-out-alt"></i> Sign Out</a>
+  </div>
+
+  <!-- STATS -->
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-ic" style="background:#eff6ff"><i class="fa fa-box" style="color:var(--blue)"></i></div>
+      <div><div class="stat-num" style="color:var(--blue)">{{ orders.count }}</div><div class="stat-label">Orders</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-ic" style="background:var(--green-l)"><i class="fa fa-calendar-check" style="color:var(--green)"></i></div>
+      <div><div class="stat-num" style="color:var(--green)">{{ appointments.count }}</div><div class="stat-label">Appointments</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-ic" style="background:var(--amber-l)"><i class="fa fa-shopping-cart" style="color:var(--amber)"></i></div>
+      <div><div class="stat-num" style="color:var(--amber)">{{ cart_qty }}</div><div class="stat-label">Items in Cart</div></div>
+    </div>
+    <a href="{% url 'about' %}" class="stat-card" style="text-decoration:none;cursor:pointer">
+      <div class="stat-ic" style="background:var(--violet-l)"><i class="fa fa-user" style="color:var(--violet)"></i></div>
+      <div><div class="stat-num" style="color:var(--violet);font-size:1rem;font-weight:700">Portfolio</div><div class="stat-label">About & Contact</div></div>
+    </a>
+  </div>
+
+  <!-- DATA -->
+  <div class="data-grid">
+    <!-- ORDERS -->
+    <div class="data-card">
+      <div class="data-card-head">
+        <h3><i class="fa fa-box" style="color:var(--blue)"></i> Recent Orders</h3>
+        <a href="{% url 'shop' %}" style="font-size:.75rem;color:var(--blue);font-weight:600">Shop more →</a>
+      </div>
+      <div class="data-card-body">
+        {% if orders %}
+          {% for o in orders|slice:":5" %}
+          <div class="record-item">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+              <div class="record-ref">{{ o.order_ref }}</div>
+              <span class="status-badge" style="background:var(--green-l);color:var(--green)">{{ o.status }}</span>
+            </div>
+            <div class="record-meta">{{ o.created_at|date:"d M Y" }} · ₹{{ o.total }}</div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state"><i class="fa fa-box"></i><p>No orders yet</p></div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- APPOINTMENTS -->
+    <div class="data-card">
+      <div class="data-card-head">
+        <h3><i class="fa fa-calendar-check" style="color:var(--green)"></i> Appointments</h3>
+        <a href="{% url 'doctors' %}" style="font-size:.75rem;color:var(--blue);font-weight:600">Book doctor →</a>
+      </div>
+      <div class="data-card-body">
+        {% if appointments %}
+          {% for a in appointments|slice:":5" %}
+          <div class="record-item">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+              <div class="record-ref">Dr. {{ a.dr_name }}</div>
+              <span class="status-badge" style="background:#eff6ff;color:var(--blue)">{{ a.status }}</span>
+            </div>
+            <div class="record-meta">{{ a.appt_date }} at {{ a.time_slot }} · {{ a.dept }} · ₹{{ a.fee }}</div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state"><i class="fa fa-calendar"></i><p>No appointments booked</p></div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

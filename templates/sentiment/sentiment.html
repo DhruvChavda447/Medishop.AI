@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% block title %}Check Sentiment{% endblock %}
+{% block extra_css %}<style>
+.sent-wrap{max-width:880px;margin:0 auto;padding:32px 20px 60px}
+.sent-hero{background:linear-gradient(135deg,#0f172a,#1e1b4b);padding:48px 0;text-align:center;color:#fff;border-radius:0}
+.sent-hero h1{font-size:1.8rem;font-weight:800;margin-bottom:8px}
+.sent-hero p{color:rgba(255,255,255,.6);font-size:.88rem}
+.pipe-row{display:flex;align-items:center;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+.pipe-chip{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:7px 14px;font-size:.72rem;font-weight:700;color:rgba(255,255,255,.85);font-family:monospace}
+.pipe-arr{color:rgba(255,255,255,.3);font-size:.85rem}
+/* INPUT CARD */
+.sent-card{background:#fff;border:1.5px solid var(--border);border-radius:18px;padding:24px;margin-bottom:16px}
+.sent-card-title{font-size:.82rem;font-weight:800;color:var(--ink2);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+textarea.sent-ta{width:100%;min-height:120px;padding:13px;border:1.5px solid var(--border);border-radius:11px;font-size:.88rem;font-family:inherit;resize:vertical;outline:none;transition:border-color .2s;line-height:1.65}
+textarea.sent-ta:focus{border-color:var(--blue)}
+.sample-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.sbtn{padding:5px 13px;border:1.5px solid var(--border);border-radius:20px;font-size:.72rem;font-weight:600;cursor:pointer;transition:all .2s;background:#fff;color:var(--muted)}
+.sbtn:hover{border-color:var(--blue);color:var(--blue);background:#eff6ff}
+.btn-run{width:100%;padding:13px;background:linear-gradient(135deg,#0f172a,#1e1b4b);color:#10b981;border:none;border-radius:12px;font-weight:700;font-size:.92rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:monospace;letter-spacing:.03em;transition:all .25s}
+.btn-run:hover{opacity:.9;transform:translateY(-1px)}
+/* TERMINAL OUTPUT — HackerRank style */
+.terminal{background:#0d1117;border:1px solid #30363d;border-radius:14px;overflow:hidden;margin-top:20px}
+.terminal-bar{background:#161b22;padding:10px 16px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:8px}
+.t-dot{width:12px;height:12px;border-radius:50%}
+.terminal-body{padding:20px;font-family:'JetBrains Mono',monospace;font-size:.78rem;line-height:1.9;overflow-x:auto}
+.t-line{display:flex;gap:8px}
+.t-prompt{color:#6e7681;user-select:none;flex-shrink:0}
+.t-key{color:#79c0ff}
+.t-colon{color:#6e7681}
+.t-str{color:#a5d6ff}
+.t-num{color:#79c0ff}
+.t-bool-pos{color:#56d364}
+.t-bool-neg{color:#f85149}
+.t-bool-neu{color:#e3b341}
+.t-label{color:#cae8ff;font-weight:700}
+.t-obj{color:#6e7681}
+.t-section{color:#388bfd;font-weight:700;margin-top:8px;margin-bottom:4px}
+.t-response-box{background:#0a3622;border-left:3px solid #56d364;padding:12px 16px;margin-top:10px;border-radius:0 8px 8px 0}
+.t-response-text{color:#7ee787;line-height:1.75;font-size:.78rem}
+.t-meta{color:#6e7681;font-size:.72rem;margin-top:14px;border-top:1px solid #21262d;padding-top:10px}
+/* LOADING */
+.terminal-loading{padding:20px;text-align:center;color:#56d364;font-family:monospace;font-size:.82rem}
+.loading-dots span{animation:dotBlink 1.4s infinite;display:inline-block}
+.loading-dots span:nth-child(2){animation-delay:.2s}
+.loading-dots span:nth-child(3){animation-delay:.4s}
+@keyframes dotBlink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+.sent-pos{color:#56d364}.sent-neg{color:#f85149}.sent-neu{color:#e3b341}
+</style>{% endblock %}
+{% block content %}
+<div class="sent-hero">
+  <div class="container">
+    <h1>Check Sentiment</h1>
+    <p>Multilingual NLP pipeline · Text analysis · Automated response generation</p>
+    <div class="pipe-row">
+      <span class="pipe-chip">TEXT_INPUT</span>
+      <span class="pipe-arr">→</span>
+      <span class="pipe-chip">lang_detect()</span>
+      <span class="pipe-arr">→</span>
+      <span class="pipe-chip">xlm_roberta.classify()</span>
+      <span class="pipe-arr">→</span>
+      <span class="pipe-chip">prompt_engineer()</span>
+      <span class="pipe-arr">→</span>
+      <span class="pipe-chip">mt5.generate()</span>
+      <span class="pipe-arr">→</span>
+      <span class="pipe-chip">JSON_OUTPUT</span>
+    </div>
+  </div>
+</div>
+
+<div class="sent-wrap">
+  <div class="sent-card">
+    <div class="sent-card-title"><i class="fa fa-terminal" style="color:var(--blue)"></i> Input Text</div>
+    <textarea class="sent-ta" id="inputText" placeholder="Enter text in any language...&#10;&#10;Try: &quot;This product is absolutely amazing!&quot;&#10;Try: &quot;Worst experience ever, complete waste of money.&quot;&#10;Try: &quot;ખૂબ સારી દવા, ઝડપથી કામ કરે છે&quot;  (Gujarati)&#10;Try: &quot;बहुत खराब उत्पाद है&quot;  (Hindi)"></textarea>
+    <div class="sample-btns">
+      <button class="sbtn" onclick="setSample('This product is absolutely excellent! Works perfectly, highly recommend to everyone.')">🟢 Positive (EN)</button>
+      <button class="sbtn" onclick="setSample('Terrible quality, complete waste of money. Very disappointed.')">🔴 Negative (EN)</button>
+      <button class="sbtn" onclick="setSample('ખૂબ સારી દવા, ઝડપથી કામ કરે છે.')">🇮🇳 Gujarati</button>
+      <button class="sbtn" onclick="setSample('बहुत खराब उत्पाद है, बिल्कुल काम नहीं किया।')">🇮🇳 Hindi</button>
+      <button class="sbtn" onclick="setSample('Produit excellent, je le recommande vivement!')">🇫🇷 French</button>
+      <button class="sbtn" onclick="setSample('منتج رائع جداً، أنصح به بشدة')">🇸🇦 Arabic</button>
+    </div>
+  </div>
+
+  <button class="btn-run" onclick="runAnalysis()">
+    <i class="fa fa-play" style="font-size:.75rem"></i> $ python analyze.py --model xlm-roberta --generate mt5
+  </button>
+
+  <div id="terminalWrap" style="display:none">
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="t-dot" style="background:#ff5f57"></span>
+        <span class="t-dot" style="background:#febc2e"></span>
+        <span class="t-dot" style="background:#28c840"></span>
+        <span style="margin-left:8px;font-size:.72rem;color:#6e7681;font-family:monospace">medishop › sentiment_pipeline.py</span>
+      </div>
+      <div id="terminalBody" class="terminal-body">
+        <div class="terminal-loading"><i class="fa fa-circle-notch fa-spin"></i> Running pipeline <span class="loading-dots"><span>.</span><span>.</span><span>.</span></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function setSample(t){document.getElementById('inputText').value=t;}
+function getCookie(n){let c=document.cookie.split(';');for(let i of c){let p=i.trim().split('=');if(p[0]===n)return decodeURIComponent(p[1]);}return '';}
+
+const LANG_NAMES={EN:'English',HI:'Hindi',GU:'Gujarati',AR:'Arabic',ZH:'Chinese',JA:'Japanese',KO:'Korean',FR:'French',DE:'German',ES:'Spanish'};
+
+function renderTerminal(data) {
+  const d = data;
+  const s = d.sentiment;
+  const p = d.prompt_engineering;
+  const g = d.generation;
+  const m = d.metadata;
+  const inp = d.input;
+
+  const sentClass = s.label==='positive'?'sent-pos':s.label==='negative'?'sent-neg':'sent-neu';
+  const sentEmoji = s.label==='positive'?'▲ POSITIVE':s.label==='negative'?'▼ NEGATIVE':'● NEUTRAL';
+
+  let html = `
+<div class="t-line"><span class="t-prompt">$</span><span style="color:#cae8ff">Pipeline execution started...</span></div>
+<div style="height:6px"></div>
+
+<div class="t-section">// ── INPUT ─────────────────────────────────</div>
+<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"text"</span><span class="t-colon">:</span><span class="t-str"> "${escHtml(inp.text.substring(0,80))}${inp.text.length>80?'...':''}"</span></div>
+<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"word_count"</span><span class="t-colon">:</span><span class="t-num"> ${inp.word_count}</span></div>
+<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"language"</span><span class="t-colon">:</span><span class="t-str"> "${inp.language}"</span><span style="color:#6e7681"> // ${LANG_NAMES[inp.language]||inp.language}</span></div>
+
+<div class="t-section">// ── XLM-RoBERTa SENTIMENT ─────────────────</div>
+<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"label"</span><span class="t-colon">:</span><span class=" ${sentClass}"> "${s.label_upper || s.label.toUpperCase()}"</span></div>
+<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"confidence"</span><span class="t-colon">:</span><span class="t-num"> ${s.confidence}</span><span style="color:#6e7681"> // ${s.confidence_pct}%</span></div>
+<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"status"</span><span class="t-colon">:</span><span class="t-str"> "${s.status}"</span></div>
+
+<div class="t-section">// ── PROMPT ENGINEERING ────────────────────</div>
+<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"context"</span><span class="t-colon">:</span><span class="t-str"> "${p.context_injected}"</span></div>
+<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"tokens_approx"</span><span class="t-colon">:</span><span class="t-num"> ${p.tokens_approx}</span></div>
+
+<div class="t-section">// ── mT5 RESPONSE GENERATION ───────────────</div>
+<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"status"</span><span class="t-colon">:</span><span class="t-str"> "${g.status}"</span></div>
+<div style="height:4px"></div>
+<div class="t-response-box">
+  <div style="font-size:.68rem;color:#3fb950;margin-bottom:6px;font-family:monospace">// Generated Response</div>
+  <div class="t-response-text">${escHtml(g.response)}</div>
+</div>
+
+<div class="t-section">// ── METADATA ──────────────────────────────</div>
+<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"processing_ms"</span><span class="t-colon">:</span><span class="t-num"> ${m.processing_ms}</span></div>
+<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"pipeline_steps"</span><span class="t-colon">:</span><span class="t-num"> ${m.pipeline_steps}</span></div>
+<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"languages_supported"</span><span class="t-colon">:</span><span class="t-num"> ${m.languages_supported}+</span></div>
+
+<div class="t-meta">
+  <span style="color:#56d364">✓</span> Pipeline complete · ${m.processing_ms}ms
+</div>`;
+  document.getElementById('terminalBody').innerHTML = html;
+}
+
+function escHtml(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+async function runAnalysis(){
+  const text = document.getElementById('inputText').value.trim();
+  if(!text){alert('Please enter some text.');return;}
+  const wrap = document.getElementById('terminalWrap');
+  wrap.style.display = 'block';
+  document.getElementById('terminalBody').innerHTML = '<div class="terminal-loading"><i class="fa fa-circle-notch fa-spin"></i> Running pipeline <span class="loading-dots"><span>.</span><span>.</span><span>.</span></span></div>';
+  wrap.scrollIntoView({behavior:'smooth',block:'center'});
+  try{
+    const r = await fetch('/api/sentiment/',{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},body:JSON.stringify({text,generate_response:true})});
+    const j = await r.json();
+    if(!j.ok){document.getElementById('terminalBody').innerHTML=`<div style="color:#f85149;padding:10px">Error: ${escHtml(j.error||'Unknown error')}</div>`;return;}
+    renderTerminal(j.data);
+  }catch(e){document.getElementById('terminalBody').innerHTML=`<div style="color:#f85149;padding:10px">Network error: ${escHtml(e.message)}</div>`;}
+}
+</script>
+{% endblock %}

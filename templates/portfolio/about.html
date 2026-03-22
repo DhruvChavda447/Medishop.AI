@@ -1,0 +1,292 @@
+{% extends "base.html" %}
+{% block title %}About — {{ profile.full_name }}{% endblock %}
+{% block extra_css %}<style>
+.about-hero{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 40%,#1e3a5f 100%);padding:72px 0 140px;position:relative;overflow:hidden}
+.about-hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:90px;background:var(--surface);clip-path:ellipse(60% 100% at 50% 100%)}
+.ah-orb1{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(37,99,235,.18),transparent 70%);top:-150px;right:-100px}
+.ah-orb2{position:absolute;width:350px;height:350px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,.15),transparent 70%);bottom:30px;left:-80px}
+.ah-inner{position:relative;z-index:2;display:flex;align-items:center;gap:44px}
+.ah-av-wrap{position:relative;flex-shrink:0}
+.ah-av{width:128px;height:128px;border-radius:50%;background:linear-gradient(135deg,rgba(37,99,235,.3),rgba(124,58,237,.3));border:3px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;font-size:3.4rem;backdrop-filter:blur(8px);box-shadow:0 0 0 8px rgba(255,255,255,.06)}
+.ah-online{position:absolute;bottom:8px;right:8px;width:22px;height:22px;background:#10b981;border-radius:50%;border:3px solid white;box-shadow:0 0 8px #10b981}
+.ah-name{font-size:2.2rem;font-weight:800;color:#fff;font-family:var(--fd);margin-bottom:5px}
+.ah-role{font-size:.95rem;color:rgba(255,255,255,.7);margin-bottom:16px;font-weight:500}
+.ah-tags{display:flex;flex-wrap:wrap;gap:7px}
+.ah-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.88);padding:5px 13px;border-radius:20px;font-size:.72rem;font-weight:600;backdrop-filter:blur(6px)}
+.edit-btn{position:absolute;top:24px;right:24px;z-index:10;display:inline-flex;align-items:center;gap:7px;padding:8px 18px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.8);border-radius:10px;font-size:.75rem;font-weight:700;cursor:pointer;transition:all .2s;text-decoration:none;backdrop-filter:blur(6px)}
+.edit-btn:hover{background:rgba(255,255,255,.18);color:#fff}
+/* BODY */
+.about-body{max-width:1100px;margin:0 auto;padding:52px 20px 72px}
+.about-top-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:22px}
+.about-card{background:#fff;border:1.5px solid var(--border);border-radius:20px;padding:28px}
+.card-hd{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.card-hd-ic{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:.88rem;color:#fff;flex-shrink:0}
+.card-hd h3{font-size:.95rem;font-weight:800}
+/* INFO ROWS */
+.irow{display:flex;align-items:flex-start;gap:12px;padding:11px 13px;background:var(--surface);border-radius:11px;margin-bottom:9px}
+.irow:last-of-type{margin-bottom:0}
+.irow-ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.78rem;flex-shrink:0;margin-top:1px}
+.irow-lbl{font-size:.68rem;color:var(--muted);font-weight:600;margin-bottom:2px}
+.irow-val{font-size:.83rem;font-weight:600;line-height:1.4}
+.social-row{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}
+.soc-btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:10px;font-size:.78rem;font-weight:700;transition:all .22s;border:1.5px solid var(--border);background:#fff;text-decoration:none;color:var(--ink)}
+.soc-btn:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.1)}
+/* EXPERIENCE & EDUCATION */
+.timeline-item{padding:16px;background:var(--surface);border-radius:14px;border-left:4px solid var(--blue);margin-bottom:12px;position:relative}
+.timeline-item:last-child{margin-bottom:0}
+.tl-badge{display:inline-flex;align-items:center;gap:5px;font-size:.65rem;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:8px}
+.tl-title{font-size:.92rem;font-weight:800;margin-bottom:3px}
+.tl-sub{font-size:.78rem;color:var(--muted);margin-bottom:8px;font-weight:500}
+.tl-desc{font-size:.78rem;color:var(--ink2);line-height:1.72}
+.tl-desc li{margin-bottom:4px;list-style:none;padding-left:14px;position:relative}
+.tl-desc li::before{content:"→";position:absolute;left:0;color:var(--blue);font-size:.7rem}
+/* SKILLS */
+.skill-section{margin-bottom:22px}
+.skill-section:last-child{margin-bottom:0}
+.sk-cat{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;display:flex;align-items:center;gap:6px;margin-bottom:10px}
+.sk-item{margin-bottom:10px}
+.sk-hdr{display:flex;justify-content:space-between;margin-bottom:4px;font-size:.79rem;font-weight:600}
+.sk-bar{height:7px;background:var(--border);border-radius:99px;overflow:hidden}
+.sk-fill{height:100%;border-radius:99px;transition:width 1.4s cubic-bezier(.22,1,.36,1)}
+/* CERTS */
+.cert-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.cert-item{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:13px;display:flex;align-items:center;gap:9px;font-size:.78rem;font-weight:600}
+/* CONTACT */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:13px}
+.fg:last-child{margin-bottom:0}
+.fl{font-size:.74rem;font-weight:700;color:var(--ink2)}
+.fc{padding:10px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:.85rem;font-family:inherit;outline:none;transition:all .2s;background:#fff;color:var(--ink);width:100%}
+.fc:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+textarea.fc{resize:vertical;min-height:110px}
+.btn-send{width:100%;padding:13px;background:var(--grad);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:.92rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 6px 20px rgba(37,99,235,.28);transition:all .25s;margin-top:4px}
+.btn-send:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(37,99,235,.38)}
+.alert-ok{background:var(--green-l);color:var(--green);border:1px solid rgba(5,150,105,.25);padding:12px 16px;border-radius:10px;margin-bottom:16px;display:flex;align-items:center;gap:8px;font-size:.84rem;font-weight:600}
+.alert-err{background:var(--red-l);color:var(--red);border:1px solid rgba(220,38,38,.25);padding:12px 16px;border-radius:10px;margin-bottom:16px;display:flex;align-items:center;gap:8px;font-size:.84rem;font-weight:600}
+.span-full{grid-column:1/-1}
+@media(max-width:900px){.about-top-grid{grid-template-columns:1fr}.ah-inner{flex-direction:column;text-align:center}.form-row{grid-template-columns:1fr}}
+</style>{% endblock %}
+{% block content %}
+
+<!-- HERO -->
+<div class="about-hero">
+  <a href="{% url 'about_edit' %}" class="edit-btn"><i class="fa fa-edit"></i> Edit Profile</a>
+  <div class="ah-orb1"></div><div class="ah-orb2"></div>
+  <div class="container">
+    <div class="ah-inner">
+      <div class="ah-av-wrap">
+        <div class="ah-av">{{ profile.avatar_emoji }}</div>
+        <div class="ah-online"></div>
+      </div>
+      <div>
+        <div class="ah-name">{{ profile.full_name }}</div>
+        <div class="ah-role">{{ profile.role }}</div>
+        <div class="ah-tags">
+          <span class="ah-tag"><i class="fa fa-map-marker" style="font-size:.62rem"></i> {{ profile.location }}</span>
+          <span class="ah-tag"><i class="fa fa-graduation-cap" style="font-size:.62rem"></i> {{ profile.degree|truncatechars:35 }}</span>
+          <span class="ah-tag"><i class="fa fa-circle" style="font-size:.5rem;color:#10b981"></i> {{ profile.status }}</span>
+          <span class="ah-tag"><i class="fa fa-briefcase" style="font-size:.62rem"></i> {{ profile.company }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="about-body">
+  <!-- TOP GRID -->
+  <div class="about-top-grid">
+
+    <!-- ABOUT + CONTACT INFO -->
+    <div class="about-card">
+      <div class="card-hd">
+        <div class="card-hd-ic" style="background:var(--grad)"><i class="fa fa-user"></i></div>
+        <h3>About Me</h3>
+      </div>
+      <p style="color:var(--muted);font-size:.85rem;line-height:1.85;margin-bottom:20px;white-space:pre-line">{{ profile.bio }}</p>
+
+      <div class="irow">
+        <div class="irow-ic" style="background:var(--grad)"><i class="fa fa-envelope"></i></div>
+        <div><div class="irow-lbl">Email</div><div class="irow-val">{{ profile.email }}</div></div>
+      </div>
+      <div class="irow">
+        <div class="irow-ic" style="background:var(--grad-green)"><i class="fa fa-phone"></i></div>
+        <div><div class="irow-lbl">Phone / WhatsApp</div><div class="irow-val">{{ profile.phone }}</div></div>
+      </div>
+      <div class="irow">
+        <div class="irow-ic" style="background:var(--grad-cyan)"><i class="fa fa-map-marker-alt"></i></div>
+        <div><div class="irow-lbl">Location</div><div class="irow-val">{{ profile.location }}</div></div>
+      </div>
+      <div class="irow">
+        <div class="irow-ic" style="background:var(--grad-warm)"><i class="fa fa-briefcase"></i></div>
+        <div><div class="irow-lbl">Current Status</div><div class="irow-val" style="color:var(--green)">● {{ profile.status }}</div></div>
+      </div>
+
+      <div class="social-row">
+        {% if profile.linkedin_url %}
+        <a href="{{ profile.linkedin_url }}" target="_blank" class="soc-btn" style="color:#0a66c2;border-color:rgba(10,102,194,.3)"><i class="fab fa-linkedin"></i> LinkedIn</a>
+        {% endif %}
+        {% if profile.github_url %}
+        <a href="{{ profile.github_url }}" target="_blank" class="soc-btn" style="color:#333;border-color:rgba(0,0,0,.2)"><i class="fab fa-github"></i> GitHub</a>
+        {% endif %}
+        {% if profile.twitter_url %}
+        <a href="{{ profile.twitter_url }}" target="_blank" class="soc-btn" style="color:#1da1f2;border-color:rgba(29,161,242,.3)"><i class="fab fa-twitter"></i> Twitter</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- RESUME + EDUCATION + CERTS -->
+    <div>
+      <!-- RESUME -->
+      <div class="about-card" style="margin-bottom:18px">
+        <div class="card-hd">
+          <div class="card-hd-ic" style="background:var(--grad-warm)"><i class="fa fa-file-pdf"></i></div>
+          <h3>Resume / CV</h3>
+        </div>
+        {% if resume %}
+        <div style="background:linear-gradient(135deg,#eff6ff,#faf5ff);border:1.5px solid rgba(37,99,235,.15);border-radius:13px;padding:20px;text-align:center;margin-bottom:14px">
+          <i class="fa fa-file-pdf" style="font-size:2rem;color:var(--red);margin-bottom:9px;display:block"></i>
+          <div style="font-weight:700;font-size:.88rem;margin-bottom:3px">{{ resume.filename }}</div>
+          <div style="font-size:.72rem;color:var(--muted);margin-bottom:14px">Always up to date</div>
+          <div style="display:flex;gap:10px;justify-content:center">
+            <a href="{% url 'resume_download' %}?mode=view" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;background:var(--grad);color:#fff;border-radius:9px;font-size:.8rem;font-weight:700;box-shadow:0 4px 14px rgba(37,99,235,.28)"><i class="fa fa-eye"></i> View PDF</a>
+            <a href="{% url 'resume_download' %}?mode=download" style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border:1.5px solid var(--border);color:var(--ink);border-radius:9px;font-size:.8rem;font-weight:700;background:#fff;transition:all .2s"><i class="fa fa-download"></i> Download</a>
+          </div>
+        </div>
+        {% else %}
+        <div style="background:var(--surface);border-radius:12px;padding:20px;text-align:center;margin-bottom:14px;color:var(--muted);font-size:.84rem"><i class="fa fa-file-pdf" style="display:block;font-size:2rem;opacity:.25;margin-bottom:8px"></i>Resume not uploaded yet.</div>
+        {% endif %}
+        <div style="background:#eff6ff;border:1.5px solid rgba(37,99,235,.18);border-radius:11px;padding:12px 14px">
+          <div style="font-size:.75rem;font-weight:700;color:var(--blue);margin-bottom:4px"><i class="fa fa-lock"></i> Resume Manager</div>
+          <p style="font-size:.73rem;color:var(--muted);line-height:1.6;margin-bottom:9px">Upload a new PDF anytime — no redeployment needed.</p>
+          <a href="{% url 'resume_upload' %}" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:var(--blue);color:#fff;border-radius:8px;font-size:.74rem;font-weight:700"><i class="fa fa-upload"></i> Upload New Resume</a>
+        </div>
+      </div>
+
+      <!-- EDUCATION -->
+      <div class="about-card">
+        <div class="card-hd">
+          <div class="card-hd-ic" style="background:var(--grad-green)"><i class="fa fa-graduation-cap"></i></div>
+          <h3>Education</h3>
+        </div>
+        <div class="timeline-item" style="border-left-color:var(--blue)">
+          <span class="tl-badge" style="background:#eff6ff;color:var(--blue)"><i class="fa fa-university"></i> {{ profile.edu_year }}</span>
+          <div class="tl-title">{{ profile.degree }}</div>
+          <div class="tl-sub">{{ profile.college }} · CGPA: {{ profile.cgpa }}</div>
+        </div>
+
+        <!-- CERTIFICATIONS -->
+        <div style="margin-top:18px">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:10px"><i class="fa fa-certificate" style="color:var(--amber)"></i> Certifications</div>
+          <div class="cert-grid">
+            {% for cert in certs %}
+            <div class="cert-item"><i class="fa fa-award" style="color:var(--amber);font-size:.85rem;flex-shrink:0"></i><span>{{ cert }}</span></div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPERIENCE — full width -->
+  <div class="about-card span-full" style="margin-bottom:22px">
+    <div class="card-hd">
+      <div class="card-hd-ic" style="background:var(--grad-cyan)"><i class="fa fa-briefcase"></i></div>
+      <h3>Work Experience</h3>
+    </div>
+    <div class="timeline-item" style="border-left-color:var(--green)">
+      <span class="tl-badge" style="background:var(--green-l);color:var(--green)"><i class="fa fa-circle" style="font-size:.5rem"></i> {{ profile.job_period }}</span>
+      <div class="tl-title">{{ profile.job_title }}</div>
+      <div class="tl-sub">{{ profile.company }}</div>
+      <ul class="tl-desc">
+        {% for line in job_desc_lines %}
+        <li>{{ line }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <!-- SKILLS — full width -->
+  <div class="about-card span-full" style="margin-bottom:22px">
+    <div class="card-hd">
+      <div class="card-hd-ic" style="background:var(--grad-pink)"><i class="fa fa-code"></i></div>
+      <h3>Technical Skills</h3>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:28px">
+      {% if skills.ai %}
+      <div class="skill-section">
+        <div class="sk-cat" style="color:var(--violet)"><i class="fa fa-brain"></i> AI / Machine Learning</div>
+        {% for sk in skills.ai %}
+        <div class="sk-item">
+          <div class="sk-hdr"><span>{{ sk.name }}</span><span style="color:var(--violet)">{{ sk.pct }}%</span></div>
+          <div class="sk-bar"><div class="sk-fill" style="width:{{ sk.pct }}%;background:var(--grad-pink)"></div></div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if skills.python %}
+      <div class="skill-section">
+        <div class="sk-cat" style="color:var(--blue)"><i class="fab fa-python"></i> Python & Backend</div>
+        {% for sk in skills.python %}
+        <div class="sk-item">
+          <div class="sk-hdr"><span>{{ sk.name }}</span><span style="color:var(--blue)">{{ sk.pct }}%</span></div>
+          <div class="sk-bar"><div class="sk-fill" style="width:{{ sk.pct }}%;background:var(--grad)"></div></div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if skills.database %}
+      <div class="skill-section">
+        <div class="sk-cat" style="color:var(--green)"><i class="fa fa-database"></i> Database & Cloud</div>
+        {% for sk in skills.database %}
+        <div class="sk-item">
+          <div class="sk-hdr"><span>{{ sk.name }}</span><span style="color:var(--green)">{{ sk.pct }}%</span></div>
+          <div class="sk-bar"><div class="sk-fill" style="width:{{ sk.pct }}%;background:var(--grad-green)"></div></div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if skills.tools %}
+      <div class="skill-section">
+        <div class="sk-cat" style="color:var(--amber)"><i class="fa fa-tools"></i> Other Tools</div>
+        {% for sk in skills.tools %}
+        <div class="sk-item">
+          <div class="sk-hdr"><span>{{ sk.name }}</span><span style="color:var(--amber)">{{ sk.pct }}%</span></div>
+          <div class="sk-bar"><div class="sk-fill" style="width:{{ sk.pct }}%;background:var(--grad-warm)"></div></div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- CONTACT FORM — full width -->
+  <div class="about-card span-full">
+    <div class="card-hd">
+      <div class="card-hd-ic" style="background:var(--grad-pink)"><i class="fa fa-envelope"></i></div>
+      <h3>Get In Touch</h3>
+    </div>
+    <p style="color:var(--muted);font-size:.85rem;margin-bottom:20px;line-height:1.7">Have a project, hiring enquiry or collaboration idea? Fill the form — it goes directly to Dhruv's inbox. Replies within 24 hours.</p>
+
+    {% if messages %}{% for m in messages %}
+    <div class="{% if 'success' in m.tags %}alert-ok{% else %}alert-err{% endif %}">
+      <i class="fa {% if 'success' in m.tags %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i> {{ m }}
+    </div>
+    {% endfor %}{% endif %}
+
+<form action="https://formspree.io/f/xzdjlepp" method="POST">
+  <div class="form-row">
+        <div class="fg"><label class="fl">Your Name *</label><input type="text" name="name" class="fc" placeholder="Enter Name." required></div>
+        <div class="fg"><label class="fl">Email Address *</label><input type="email" name="email" class="fc" placeholder="medishop.ai@outlook.com." required></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label class="fl">Phone / WhatsApp</label><input type="text" name="phone" class="fc" placeholder="Phone no."></div>
+        <div class="fg"><label class="fl">Subject *</label><input type="text" name="subject" class="fc" placeholder="e.g. Hiring, Project, Collaboration" required></div>
+      </div>
+      <div class="fg"><label class="fl">Message *</label><textarea name="message" class="fc" placeholder="Tell me about your project, opportunity or idea…" required></textarea></div>
+      <button type="submit" class="btn-send"><i class="fa fa-paper-plane"></i> Send Message to Dhruv</button>
+      <p style="text-align:center;font-size:.7rem;color:var(--muted);margin-top:10px"><i class="fa fa-lock" style="color:var(--green)"></i> Saved securely · Delivered to dhruvchavda.intern@gmail.com</p>
+    </form>
+  </div>
+
+</div>
+{% endblock %}

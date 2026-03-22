@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% block title %}Checkout{% endblock %}
+{% block extra_css %}<style>
+.checkout-wrap{max-width:1060px;margin:0 auto;padding:28px 20px 60px;display:grid;grid-template-columns:1fr 340px;gap:22px;align-items:start}
+.co-card{background:#fff;border:1.5px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:18px}
+.co-card:last-child{margin-bottom:0}
+.co-head{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px}
+.co-head h3{font-size:.9rem;font-weight:800}
+.co-body{padding:22px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.fg:last-child{margin-bottom:0}
+.fl{font-size:.75rem;font-weight:700;color:var(--ink2)}
+.fc{padding:10px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:.85rem;font-family:inherit;outline:none;transition:all .2s;background:#fff;color:var(--ink);width:100%}
+.fc:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+textarea.fc{resize:none;min-height:72px}
+/* PAYMENT */
+.pay-option{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;margin-bottom:8px}
+.pay-option:last-child{margin-bottom:0}
+.pay-option:hover{border-color:var(--blue);background:#fafbff}
+.pay-option.selected{border-color:var(--blue);background:#eff6ff}
+.pay-option input[type=radio]{width:16px;height:16px;accent-color:var(--blue);flex-shrink:0}
+.pay-ic{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0}
+.pay-name{font-size:.85rem;font-weight:700}
+.pay-sub{font-size:.72rem;color:var(--muted)}
+/* SUMMARY */
+.sum-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:.82rem}
+.sum-item:last-of-type{border-bottom:none}
+.sum-total-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;font-size:1rem;font-weight:800}
+.btn-order{width:100%;padding:14px;background:var(--grad-green);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 6px 20px rgba(5,150,105,.3);transition:all .25s;margin-top:16px}
+.btn-order:hover{transform:translateY(-2px)}
+.err-box{background:var(--red-l);border:1px solid rgba(220,38,38,.25);border-radius:10px;padding:10px 14px;font-size:.8rem;color:var(--red);margin-bottom:16px}
+@media(max-width:768px){.checkout-wrap{grid-template-columns:1fr}.form-row{grid-template-columns:1fr}}
+</style>{% endblock %}
+{% block content %}
+<div style="background:#fff;border-bottom:1px solid var(--border);padding:18px 0">
+  <div style="max-width:1060px;margin:0 auto;padding:0 20px">
+    <div style="font-size:.75rem;color:var(--muted);margin-bottom:4px"><a href="{% url 'cart' %}" style="color:var(--blue)">Cart</a> / Checkout</div>
+    <h1 style="font-size:1.4rem;font-weight:800;display:flex;align-items:center;gap:9px"><i class="fa fa-lock" style="color:var(--green)"></i> Secure Checkout</h1>
+  </div>
+</div>
+
+<div class="checkout-wrap">
+  <!-- LEFT -->
+  <div>
+    {% if errors %}
+    <div class="err-box">{% for e in errors %}<div>• {{ e }}</div>{% endfor %}</div>
+    {% endif %}
+
+    <form method="post" id="checkoutForm">
+      {% csrf_token %}
+
+      <!-- DELIVERY -->
+      <div class="co-card">
+        <div class="co-head">
+          <div style="width:32px;height:32px;background:var(--grad);border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.78rem"><i class="fa fa-map-marker-alt"></i></div>
+          <h3>Delivery Address</h3>
+        </div>
+        <div class="co-body">
+          <div class="form-row">
+            <div class="fg">
+              <label class="fl">Full Name *</label>
+              <input type="text" name="full_name" class="fc" placeholder="Your full name."  required>
+            </div>
+            <div class="fg">
+              <label class="fl">Phone Number *</label>
+              <input type="text" name="phone" class="fc" placeholder="Enter Phone no." value="{{ post.phone|default:'' }}" required>
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">Delivery Address *</label>
+            <textarea name="address" class="fc" placeholder="House / Flat No., Street, Area, Landmark…" required>{{ post.address|default:'' }}</textarea>
+          </div>
+          <div class="form-row">
+            <div class="fg">
+              <label class="fl">City *</label>
+              <input type="text" name="city" class="fc" placeholder="City." value="{{ post.city|default:'' }}" required>
+            </div>
+            <div class="fg">
+              <label class="fl">PIN Code *</label>
+              <input type="text" name="pin_code" class="fc" placeholder="Pin code." value="{{ post.pin_code|default:'' }}" maxlength="6" required>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAYMENT -->
+      <div class="co-card">
+        <div class="co-head">
+          <div style="width:32px;height:32px;background:var(--grad-green);border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.78rem"><i class="fa fa-credit-card"></i></div>
+          <h3>Payment Method</h3>
+        </div>
+        <div class="co-body">
+          <label class="pay-option" onclick="selectPay(this)">
+            <input type="radio" name="payment_method" value="upi" checked>
+            <div class="pay-ic" style="background:var(--green-l)"><i class="fa fa-mobile-alt" style="color:var(--green)"></i></div>
+            <div><div class="pay-name">UPI</div><div class="pay-sub">PhonePe · GPay · Paytm · BHIM</div></div>
+          </label>
+          <label class="pay-option" onclick="selectPay(this)">
+            <input type="radio" name="payment_method" value="card">
+            <div class="pay-ic" style="background:#eff6ff"><i class="fa fa-credit-card" style="color:var(--blue)"></i></div>
+            <div><div class="pay-name">Credit / Debit Card</div><div class="pay-sub">Visa · Mastercard · RuPay</div></div>
+          </label>
+          <label class="pay-option" onclick="selectPay(this)">
+            <input type="radio" name="payment_method" value="netbanking">
+            <div class="pay-ic" style="background:var(--violet-l)"><i class="fa fa-university" style="color:var(--violet)"></i></div>
+            <div><div class="pay-name">Net Banking</div><div class="pay-sub">All major banks supported</div></div>
+          </label>
+          <label class="pay-option" onclick="selectPay(this)">
+            <input type="radio" name="payment_method" value="cod">
+            <div class="pay-ic" style="background:var(--amber-l)"><i class="fa fa-money-bill-wave" style="color:var(--amber)"></i></div>
+            <div><div class="pay-name">Cash on Delivery</div><div class="pay-sub">Pay when you receive your order</div></div>
+          </label>
+        </div>
+      </div>
+
+      <!-- SUBMIT (inside form) -->
+      <button type="submit" class="btn-order"><i class="fa fa-lock"></i> Place Order Securely</button>
+    </form>
+  </div>
+
+  <!-- ORDER SUMMARY -->
+  <div style="position:sticky;top:78px">
+    <div class="co-card">
+      <div class="co-head">
+        <div style="width:32px;height:32px;background:var(--grad-warm);border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.78rem"><i class="fa fa-shopping-bag"></i></div>
+        <h3>Order Summary</h3>
+      </div>
+      <div class="co-body">
+        {% for item in items %}
+        <div class="sum-item">
+          <span style="max-width:190px;line-height:1.4">{{ item.name }} <span style="color:var(--muted)">×{{ item.qty }}</span></span>
+          <span style="font-weight:700;flex-shrink:0">₹{{ item.line_total|floatformat:0 }}</span>
+        </div>
+        {% endfor %}
+        <div style="padding-top:10px">
+          <div style="display:flex;justify-content:space-between;font-size:.82rem;padding:4px 0"><span>Subtotal</span><span>₹{{ subtotal|floatformat:0 }}</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:.82rem;padding:4px 0"><span>Delivery</span><span style="color:{% if delivery == 0 %}var(--green){% else %}inherit{% endif %}">{% if delivery == 0 %}FREE{% else %}₹{{ delivery }}{% endif %}</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:.82rem;padding:4px 0;color:var(--green)"><span>Member Discount (5%)</span><span>−₹{{ discount|floatformat:0 }}</span></div>
+          <div style="border-top:1.5px solid var(--border);margin:8px 0"></div>
+          <div class="sum-total-row"><span>Total</span><span style="color:var(--blue);font-size:1.05rem">₹{{ total|floatformat:0 }}</span></div>
+        </div>
+        <div style="margin-top:12px;display:flex;align-items:center;gap:7px;font-size:.72rem;color:var(--muted)"><i class="fa fa-shield-alt" style="color:var(--green)"></i> 100% Secure · SSL Encrypted · Trusted</div>
+      </div>
+    </div>
+    <a href="{% url 'cart' %}" style="display:flex;align-items:center;justify-content:center;gap:7px;padding:11px;border:1.5px solid var(--border);border-radius:12px;font-size:.82rem;font-weight:600;color:var(--muted);background:#fff;margin-top:10px;transition:all .2s" onmouseover="this.style.color='var(--blue)';this.style.borderColor='var(--blue)'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--border)'"><i class="fa fa-arrow-left"></i> Edit Cart</a>
+  </div>
+</div>
+
+<script>
+function selectPay(label){
+  document.querySelectorAll('.pay-option').forEach(l=>l.classList.remove('selected'));
+  label.classList.add('selected');
+}
+// Mark first as selected on load
+document.querySelector('.pay-option').classList.add('selected');
+</script>
+{% endblock %}
