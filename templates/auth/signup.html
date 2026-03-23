@@ -31,7 +31,7 @@
     {% csrf_token %}
     <div class="auth-fg">
       <label class="auth-lbl"><i class="fa fa-user"></i> Full Name</label>
-      <input type="text" name="full_name" class="auth-inp" placeholder="Rahul Sharma" autocomplete="name" value="{{ form.full_name.value|default:'' }}" required>
+      <input type="text" name="full_name" class="auth-inp" placeholder="Enter Name" autocomplete="name" value="{{ form.full_name.value|default:'' }}" required>
     </div>
     <div class="auth-fg">
       <label class="auth-lbl"><i class="fa fa-envelope"></i> Email Address</label>

@@ -10,6 +10,13 @@ def create_admin(request):
         User.objects.create_superuser('dhruv','dhruvchavda.intern@gmail.com','Admin@1234')
         return HttpResponse('Admin created! username: dhruv password: Admin@1234')
     return HttpResponse('Already exists')
+
+def run_migrate(request):
+    from django.core.management import call_command
+    import io
+    out = io.StringIO()
+    call_command('migrate', stdout=out)
+    return HttpResponse(out.getvalue().replace('\n','<br>'))
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('home_app.urls')),
@@ -19,5 +26,7 @@ urlpatterns = [
     path('', include('skin_ai.urls')),
     path('', include('sentiment_check.urls')),
     path('', include('portfolio.urls')),
+path('run-migrate/', run_migrate),
+
 path('create-admin/', create_admin),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
