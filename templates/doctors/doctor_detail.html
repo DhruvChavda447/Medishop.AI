@@ -32,7 +32,7 @@
 .score-circle{width:72px;height:72px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;font-weight:800;font-family:var(--fd);flex-shrink:0;box-shadow:0 8px 20px rgba(37,99,235,.3)}
 /* REVIEWS */
 .reviews-card{background:#fff;border:1.5px solid var(--border);border-radius:20px;padding:22px}
-.review-item{padding:14px;border:1px solid var(--border);border-radius:12px;margin-bottom:10px}
+.review-item{padding:14px 16px;border-radius:12px;border:1px solid var(--border);margin-bottom:10px;min-height:90px}
 .review-item:last-child{margin-bottom:0}
 .review-stars{color:#f59e0b;font-size:.8rem;margin-bottom:6px}
 .review-text{font-size:.83rem;color:var(--ink2);line-height:1.65}
@@ -59,8 +59,8 @@
       <div class="dr-profile-body">
         <div class="dr-stat-row">
           <div class="dr-stat"><div class="dr-stat-num" style="color:var(--blue)">{{ doctor.exp }}</div><div class="dr-stat-lbl">Yrs Exp</div></div>
-          <div class="dr-stat"><div class="dr-stat-num" style="color:#f59e0b">★{{ doctor.rating }}</div><div class="dr-stat-lbl">Rating</div></div>
-          <div class="dr-stat"><div class="dr-stat-num" style="color:var(--green)">₹{{ doctor.fee }}</div><div class="dr-stat-lbl">Fee</div></div>
+          <div class="dr-stat"><div class="dr-stat-num" style="color:#f59e0b">{{ doctor.rating }}</div><div class="dr-stat-lbl">Rating</div></div>
+          <div class="dr-stat"><div  style="color:var(--green); font-weight:700;">₹ {{ doctor.fee }}</div><div class="dr-stat-lbl">Fee</div></div>
         </div>
         <div class="dr-tags">{% for tag in doctor.tags %}<span class="dr-tag">{{ tag }}</span>{% endfor %}</div>
         <a href="{% url 'book_appointment' doctor.id %}" class="btn-book"><i class="fa fa-calendar-plus"></i> Book Appointment</a>

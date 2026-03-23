@@ -4,6 +4,17 @@
 .shop-hero{background:var(--grad);padding:48px 0;color:#fff}
 .shop-hero h1{font-size:1.8rem;font-weight:800;margin-bottom:8px}
 .shop-hero p{opacity:.85;font-size:.9rem}
+.prob-price-working {
+  display: flex;              /* FIX */
+  align-items: center;        /* ALIGN ALL SAME LINE */
+  gap: 10px;
+  font-family: var(--fm);     /* mono font → perfect alignment */
+}
+/* Optional hover effect */
+.prob-price-working:hover {
+  background-color: #e1f4f8;
+  transform: scale(1.05);
+}
 .cat-pills{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0}
 .cat-pill{padding:8px 20px;border:2px solid var(--border);border-radius:30px;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .2s;background:#fff;color:var(--muted)}
 .cat-pill.active,.cat-pill:hover{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(37,99,235,.3)}
@@ -11,18 +22,30 @@
 .prod-card{background:#fff;border:1.5px solid var(--border);border-radius:18px;overflow:hidden;transition:all .3s;cursor:pointer}
 .prod-card:hover{transform:translateY(-5px);box-shadow:var(--sh-lg)}
 .prod-img{width:100%;height:180px;object-fit:cover;background:var(--surface)}
-.prod-body{padding:16px}
+.prod-body{padding:16px;display:flex;flex-direction:column}
 .prod-cat{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--blue);background:var(--blue-xl);padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:8px}
 .prod-name{font-size:.92rem;font-weight:800;margin-bottom:4px;line-height:1.3}
 .prod-mfr{font-size:.72rem;color:var(--muted);margin-bottom:10px}
 .prod-stars{display:flex;align-items:center;gap:5px;margin-bottom:10px}
-.stars{color:#f59e0b;font-size:.75rem}
+.stars{color:#f59e0b;btont-size:.75rem}
 .nlp-badge{display:inline-flex;align-items:center;gap:5px;font-size:.65rem;font-weight:700;padding:3px 10px;border-radius:20px;background:var(--green-l);color:var(--green)}
-.prod-price{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.price-now{font-size:1.1rem;font-weight:800;color:var(--blue)}
-.price-old{font-size:.78rem;color:var(--muted);text-decoration:line-through}
-.disc-tag{font-size:.65rem;font-weight:700;background:var(--red-l);color:var(--red);padding:2px 8px;border-radius:20px}
-.add-btn{width:100%;background:var(--grad);color:#fff;border:none;padding:10px;border-radius:10px;font-weight:700;font-size:.82rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px}
+.prod-price{display:flex;align-items:center;gap:10px;margin-bottom:12px;min-height:28px;flex-wrap:wrap}
+.price-now {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--blue);
+  display: flex;
+  align-items: center;
+}
+
+.price-old {
+  font-size: 14px;
+  color: var(--muted);
+  text-decoration: line-through;
+  display: flex;
+  align-items: center;
+}.disc-tag{font-size:.65rem;font-weight:700;background:var(--red-l);color:var(--red);padding:2px 8px;border-radius:20px}
+.add-btn{width:100%;background:var(--grad);color:#fff;border:none;padding:10px;border-radius:10px;font-weight:700;font-size:.82rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px;margin-top:auto}
 .add-btn:hover{box-shadow:0 4px 14px rgba(37,99,235,.3)}
 .rx-tag{background:var(--amber-l);color:var(--amber);padding:3px 8px;border-radius:6px;font-size:.65rem;font-weight:700}
 .nlp-top{background:linear-gradient(90deg,var(--green-l),transparent);border-left:3px solid var(--green);padding:4px 10px;font-size:.65rem;font-weight:700;color:var(--green);display:flex;align-items:center;gap:6px}
@@ -34,6 +57,7 @@
     <p>AI-Ranked by XLM-RoBERTa Sentiment · Best-reviewed products shown first per category</p>
   </div>
 </div>
+
 <div class="container" style="padding:32px 20px">
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
     <div style="display:flex;align-items:center;gap:8px">
@@ -72,8 +96,8 @@
             <span style="font-size:.72rem;font-weight:700">{{ p.rating }}</span>
             <span class="nlp-badge"><i class="fa fa-brain"></i> NLP: {{ p.nlp_score }}</span>
           </div>
-          <div class="prod-price">
-            <span class="price-now">₹{{ p.final_price }}</span>
+          <div class="prob-price-working">
+            <span class="price-now">₹ {{ p.final_price }}</span>
             {% if p.disc > 0 %}<span class="price-old">₹{{ p.price }}</span><span class="disc-tag">{{ p.disc }}% OFF</span>{% endif %}
           </div>
           <button class="add-btn" onclick="event.stopPropagation();addToCart({{ p.id }},'{{ p.name|escapejs }}')"><i class="fa fa-cart-plus"></i> Add to Cart</button>
