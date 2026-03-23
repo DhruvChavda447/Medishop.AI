@@ -69,6 +69,12 @@ h1,h2,h3,h4,h5{font-family:var(--fd);font-weight:700;line-height:1.2}
 
 /* ═══ CONTAINER ═══ */
 .container{max-width:1240px;margin:0 auto;padding:0 20px;width:100%}
+/* ═══ GLOBAL OVERFLOW PREVENTION ═══ */
+/* Every section/div clips its own overflow so nothing bleeds right */
+section, .container, main, footer, header, nav{max-width:100%}
+h1,h2,h3,h4,h5,p{word-break:break-word;overflow-wrap:break-word;max-width:100%}
+.cta-h2{font-size:clamp(1.3rem,5vw,2.2rem)}
+
 
 /* ═══ NAVBAR ═══ */
 .navbar{
@@ -78,14 +84,14 @@ h1,h2,h3,h4,h5{font-family:var(--fd);font-weight:700;line-height:1.2}
   border-bottom:1px solid rgba(37,99,235,.08);
   display:flex;align-items:center;
   box-shadow:0 2px 24px rgba(37,99,235,.07),0 1px 0 rgba(255,255,255,.9) inset;
-  width:100%;overflow:hidden;
+  width:100%;
 }
 .nav-in{display:flex;align-items:center;gap:5px;width:100%;height:100%;min-width:0}
 .nav-brand{font-family:var(--fd);font-size:1.3rem;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:9px;margin-right:6px;flex-shrink:0}
 .nb-ic{width:36px;height:36px;background:var(--grad);border-radius:11px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.9rem;box-shadow:0 4px 14px rgba(37,99,235,.4);animation:glowPulse 3s ease-in-out infinite}
 .nb-t{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .nb-p{background:var(--grad-warm);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.nav-links{display:flex;align-items:center;gap:2px;flex:1;min-width:0;overflow:hidden}
+.nav-links{display:flex;align-items:center;gap:2px;flex:1;min-width:0;overflow:hidden;flex-shrink:1}
 .nl{
   padding:7px 11px;border-radius:10px;font-size:.79rem;font-weight:600;
   color:var(--muted);transition:all .22s;border:none;background:none;
@@ -97,12 +103,12 @@ h1,h2,h3,h4,h5{font-family:var(--fd);font-weight:700;line-height:1.2}
 .nav-srch{
   display:flex;align-items:center;background:rgba(241,245,249,.95);
   border-radius:50px;padding:7px 16px;gap:8px;border:1.5px solid transparent;
-  transition:all .25s;min-width:200px;
+  transition:all .25s;min-width:140px;max-width:200px;flex-shrink:1;
 }
-.nav-srch:focus-within{border-color:var(--blue);background:#fff;box-shadow:0 0 0 4px rgba(37,99,235,.1)}
+.nav-srch:focus-within{border-color:var(--blue);background:#fff;box-shadow:0 0 0 4px rgba(37,99,235,.1);min-width:180px}
 .nav-srch input{background:none;border:none;outline:none;font-size:.79rem;color:var(--ink);width:100%}
 .nav-srch i{color:var(--muted);font-size:.72rem}
-.nav-act{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.nav-act{display:flex;align-items:center;gap:5px;flex-shrink:0;margin-left:auto}
 .bic{
   min-width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);
   background:#fff;display:flex;align-items:center;justify-content:center;
@@ -560,16 +566,17 @@ label{font-size:.79rem;font-weight:600;color:var(--ink2);display:block;margin-bo
   .mob-nav{display:flex}
   .hero-visual{display:none}
   .hero-orbs{overflow:hidden}
+  .nav-act{gap:4px}
 }
 
 /* ═══ MOBILE — PHONE (≤600px) ═══ */
 @media(max-width:600px){
   .g4,.g3,.g2{grid-template-columns:1fr}
   .g5{grid-template-columns:repeat(2,1fr)}
-  .hero h1{font-size:1.6rem}
-  .hero p{font-size:.88rem}
-  .hero-stats{gap:16px}
-  .hstat-num{font-size:1.5rem}
+  .hero h1{font-size:1.4rem}
+  .hero p{font-size:.86rem}
+  .hero-stats{gap:10px}
+  .hstat-num{font-size:1.3rem}
   .hero-acts{gap:8px}
   .container{padding:0 14px}
   #mp{width:calc(100vw - 20px);right:10px;bottom:86px;max-height:calc(100vh - 100px)}
@@ -578,32 +585,56 @@ label{font-size:.79rem;font-weight:600;color:var(--ink2);display:block;margin-bo
   .footer-bottom{flex-direction:column;text-align:center}
   #twrap{right:10px;left:10px;max-width:100%;width:auto}
   .toast{min-width:0;width:100%}
-  .nav-act{gap:3px}
-  .bic{padding:0 6px;min-width:32px}
+  /* Nav right side — compact but always visible */
+  .nav-act{gap:3px;margin-left:auto}
+  .bic{padding:0 7px;min-width:34px;height:34px;font-size:.78rem}
   .nav-user-nm{display:none}
-  .nav-user{padding:5px 8px 5px 5px}
-  .ph h1{font-size:1.6rem}
-  .ph{padding:36px 0 30px}
-  .sec-hdr h2{font-size:1.3rem}
-  .auth-box{padding:28px 20px}
-  .cb{padding:16px}
+  .nav-user{padding:4px 8px 4px 4px;gap:5px}
+  .nav-user-av{width:26px;height:26px;font-size:.7rem}
+  .nav-logout{width:32px;height:32px;font-size:.78rem}
+  .hb{width:34px;height:34px}
+  .nav-brand{font-size:1.05rem;gap:6px}
+  .nb-ic{width:30px;height:30px;font-size:.78rem}
+  /* Page headings — prevent all text overflow */
+  .ph h1{font-size:1.4rem}
+  .ph{padding:32px 0 26px}
+  .sec-hdr h2{font-size:1.2rem}
+  .auth-box{padding:24px 18px}
+  .cb{padding:14px}
   .cart-item{gap:10px}
   .doc-meta{flex-wrap:wrap;gap:8px}
-  .btn{padding:10px 18px;font-size:.82rem}
-  .blg{padding:12px 24px;font-size:.9rem}
+  .btn{padding:10px 16px;font-size:.8rem}
+  .blg{padding:11px 20px;font-size:.88rem}
+  /* Section headings inside pages */
+  .dr-hero h1{font-size:1.3rem}
+  .shop-hero h1{font-size:1.3rem}
+  .sent-hero h1{font-size:1.3rem}
+  .health-hero h1{font-size:1.3rem}
+  .cta-h2{font-size:1.3rem}
+  /* Kill any section overflow */
+  section{overflow:hidden}
 }
 
 /* ═══ MOBILE — SMALL PHONE (≤400px) ═══ */
 @media(max-width:400px){
   .g5{grid-template-columns:1fr}
-  .hero h1{font-size:1.35rem}
-  .nav-brand span:last-child{display:none}
-  .hstat{min-width:60px}
+  .hstat{min-width:0}
   .mchips{gap:4px}
   .mchip{padding:4px 8px;font-size:.63rem}
+  .nav-brand .nb-t{font-size:.9rem}
+  .bic{padding:0 5px;min-width:28px;height:30px;font-size:.7rem}
+  .nav-logout{width:28px;height:28px;font-size:.7rem}
+  .nav-user{padding:3px 5px 3px 3px}
+  .nav-user-av{width:22px;height:22px;font-size:.62rem}
+  .cart-badge{width:15px;height:15px;font-size:.45rem;top:-5px;right:-5px}
+  .hb{width:30px;height:30px}
+  section{overflow:hidden}
 }
 
 /* ═══ SKIN & AIML PAGES ═══ */
+/* Global: ensure fixed bot button never overlaps content */
+main{padding-bottom:100px}
+@media(max-width:600px){main{padding-bottom:90px}}
 .scan-area{border:2.5px dashed rgba(37,99,235,.25);border-radius:18px;padding:40px;text-align:center;cursor:pointer;transition:.3s;background:rgba(37,99,235,.02)}
 .scan-area:hover{border-color:var(--blue);background:rgba(37,99,235,.05)}
 .scan-area.dragover{border-color:var(--violet);background:rgba(124,58,237,.05)}

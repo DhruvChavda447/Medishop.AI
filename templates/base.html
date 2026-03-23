@@ -1,4 +1,5 @@
-{% load static %}<!DOCTYPE html>
+{% load static %}
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -16,13 +17,91 @@
 
 <!-- TOAST WRAPPER -->
 <div id="twrap"></div>
+<!-- ══ NAVBAR STYLES ══ -->
+<style>
+.navbar{position:sticky;top:0;z-index:1000;height:64px;width:100%;background:rgba(255,255,255,.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(37,99,235,.1);box-shadow:0 2px 20px rgba(37,99,235,.08);display:flex;align-items:center;}
+.nav-in{display:flex;align-items:center;width:100%;height:100%;gap:6px;padding:0 20px;min-width:0;max-width:1240px;margin:0 auto;}
+.nav-brand{display:flex;align-items:center;gap:8px;flex-shrink:0;font-family:var(--fd);font-size:1.2rem;font-weight:800;text-decoration:none;color:inherit;}
+.nb-ic{width:36px;height:36px;background:var(--grad);border-radius:11px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.9rem;flex-shrink:0;box-shadow:0 4px 14px rgba(37,99,235,.4);animation:glowPulse 3s ease-in-out infinite;}
+.nb-t{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.nb-p{background:var(--grad-warm);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.nav-links{display:flex;align-items:center;gap:2px;flex:1;min-width:0;overflow:hidden;}
+.nl{padding:7px 10px;border-radius:10px;font-size:.78rem;font-weight:600;color:var(--muted);transition:all .2s;border:none;background:none;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;text-decoration:none;}
+.nl:hover,.nl.active{color:var(--blue);background:var(--blue-xl);}
+.nl.active{box-shadow:inset 0 0 0 1.5px rgba(37,99,235,.2);}
+.nl i{font-size:.72rem;}
+.nav-srch{display:flex;align-items:center;background:rgba(241,245,249,.95);border-radius:50px;padding:7px 14px;gap:8px;border:1.5px solid transparent;transition:all .25s;min-width:140px;max-width:200px;flex-shrink:1;}
+.nav-srch:focus-within{border-color:var(--blue);background:#fff;box-shadow:0 0 0 4px rgba(37,99,235,.1);}
+.nav-srch input{background:none;border:none;outline:none;font-size:.78rem;color:var(--ink);width:100%;min-width:0;font-family:var(--fb);}
+.nav-srch>i{color:var(--muted);font-size:.72rem;flex-shrink:0;}
+.nav-act{display:flex;align-items:center;gap:5px;flex-shrink:0;margin-left:auto;}
+.bic{width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;color:var(--ink2);transition:all .22s;position:relative;font-size:.82rem;cursor:pointer;text-decoration:none;flex-shrink:0;}
+.bic:hover{border-color:var(--blue);color:var(--blue);transform:translateY(-1px);}
+.cart-badge{position:absolute;top:-7px;right:-7px;background:var(--grad-warm);color:#fff;border-radius:50%;width:18px;height:18px;font-size:.52rem;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid #fff;}
+.nav-user{display:flex;align-items:center;gap:7px;cursor:pointer;padding:4px 11px 4px 4px;border-radius:50px;border:1.5px solid var(--border);background:#fff;transition:all .22s;flex-shrink:0;}
+.nav-user:hover{border-color:var(--blue);box-shadow:0 2px 10px rgba(37,99,235,.12);}
+.nav-user-av{width:28px;height:28px;border-radius:50%;background:var(--grad);color:#fff;font-size:.75rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.nav-user-nm{font-size:.78rem;font-weight:600;color:var(--ink2);white-space:nowrap;max-width:90px;overflow:hidden;text-overflow:ellipsis;}
+.nav-logout{width:34px;height:34px;border-radius:9px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .22s;font-size:.8rem;flex-shrink:0;text-decoration:none;}
+.nav-logout:hover{border-color:var(--red);color:var(--red);}
+.hb{display:none;flex-direction:column;gap:5px;width:38px;height:38px;align-items:center;justify-content:center;border:1.5px solid var(--border);border-radius:10px;background:#fff;cursor:pointer;flex-shrink:0;transition:border-color .2s;padding:0;}
+.hb span{display:block;width:16px;height:2px;background:var(--ink2);border-radius:2px;transition:transform .3s ease,opacity .2s,background .2s;}
+/* Mobile search row (inside mob-nav) */
+.mob-srch{display:flex;align-items:center;gap:8px;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:4px;}
+.mob-srch input{background:none;border:none;outline:none;font-size:.9rem;color:var(--ink);width:100%;font-family:var(--fb);}
+.mob-srch i{color:var(--muted);font-size:.8rem;flex-shrink:0;}
+.mob-srch:focus-within{border-color:var(--blue);background:#fff;}
+.mob-div{height:1px;background:var(--border);margin:6px 4px 10px;}
+/* Mobile nav */
+.mob-nav{display:flex;flex-direction:column;position:fixed;top:64px;left:0;right:0;z-index:999;background:#fff;border-bottom:2px solid rgba(37,99,235,.1);box-shadow:0 16px 48px rgba(0,0,0,.15);max-height:0;overflow:hidden;opacity:0;pointer-events:none;padding:0 10px;transition:max-height .38s cubic-bezier(.22,1,.36,1),opacity .25s ease,padding .3s ease;}
+.mob-nav.open{max-height:calc(100dvh - 64px);overflow-y:auto;opacity:1;pointer-events:auto;padding:8px 10px 20px;}
+.mnlk{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;font-size:.92rem;font-weight:600;color:var(--ink2);text-decoration:none;transition:background .15s,color .15s;border:none;background:none;cursor:pointer;width:100%;text-align:left;}
+.mnlk i{width:30px;height:30px;border-radius:8px;background:var(--surface);color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:.82rem;flex-shrink:0;transition:background .15s,color .15s;}
+.mnlk:hover,.mnlk:active{background:var(--blue-xl);color:var(--blue);}
+.mnlk:hover i,.mnlk:active i{background:var(--blue-l);color:var(--blue);}
+/* ══ ≤900px — tablet: hide links+search, show hamburger ══ */
+@media(max-width:900px){
+  .nav-links{display:none;}
+  .nav-srch{display:none;}
+  .hb{display:flex;}
+}
+
+/* ══ ≤600px — phone: only Brand + User Avatar + Hamburger in top bar ══ */
+@media(max-width:600px){
+  .nav-in{padding:0 12px;gap:6px;}
+  .nav-brand{font-size:1.05rem;gap:6px;}
+  .nb-ic{width:32px;height:32px;font-size:.82rem;}
+  /* Cart icon and logout hidden — they're both inside mob-nav */
+  .bic{display:none;}
+  .nav-logout{display:none;}
+  /* User avatar only, no name text */
+  .nav-user-nm{display:none;}
+  .nav-user{padding:4px 8px 4px 4px;gap:0;border-radius:50%;}
+  .nav-user-av{width:28px;height:28px;font-size:.72rem;}
+  /* Hamburger */
+  .nav-act{gap:6px;margin-left:auto;}
+  .hb{width:38px;height:38px;}
+  /* Mobile menu rows */
+  .mnlk{padding:11px 12px;font-size:.88rem;}
+}
+
+/* ══ ≤400px — very small phones ══ */
+@media(max-width:400px){
+  .nav-in{padding:0 10px;gap:5px;}
+  .nb-ic{width:28px;height:28px;font-size:.76rem;}
+  .nb-t,.nb-p{font-size:.95rem;}
+  .nav-user-av{width:26px;height:26px;font-size:.68rem;}
+  .hb{width:34px;height:34px;}
+  .hb span{width:14px;}
+}
+</style>
 
 <!-- NAVBAR -->
 <nav class="navbar">
   <div class="container nav-in">
     <a class="nav-brand" href="{% url 'home' %}">
       <div class="nb-ic"><i class="fa fa-heartbeat"></i></div>
-      <span class="nb-t">MediShop.AI</span><span class="nb-p"></span>
+      <span class="nb-t">MediShop</span><span class="nb-p">.AI</span>
     </a>
     <div class="nav-links">
       <a class="nl {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}"><i class="fa fa-home"></i>Home</a>
@@ -46,7 +125,7 @@
         <span class="nav-user-nm">{{ request.user.first_name|default:request.user.username }}</span>
       </div>
       <a class="nav-logout" href="{% url 'logout' %}" title="Sign Out"><i class="fa fa-sign-out-alt"></i></a>
-      <button class="hb" onclick="document.getElementById('mobn').classList.toggle('open')">
+      <button class="hb" id="__hb" onclick="(function(b,n){n.classList.toggle('open');b.classList.toggle('open');b.classList.contains('open')?(b.querySelectorAll('span')[0].style.cssText='transform:translateY(7px) rotate(45deg);background:var(--blue)',b.querySelectorAll('span')[1].style.cssText='opacity:0;transform:scaleX(0)',b.querySelectorAll('span')[2].style.cssText='transform:translateY(-7px) rotate(-45deg);background:var(--blue)'):(b.querySelectorAll('span').forEach(s=>s.style.cssText=''));})(this,document.getElementById('mobn'))" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
     </div>
@@ -55,17 +134,44 @@
 
 <!-- MOBILE NAV -->
 <div class="mob-nav" id="mobn">
-  <a class="mnlk" href="{% url 'home' %}" onclick="this.closest('.mob-nav').classList.remove('open')"><i class="fa fa-home"></i>Home</a>
-  <a class="mnlk" href="{% url 'shop' %}" onclick="this.closest('.mob-nav').classList.remove('open')"><i class="fa fa-pills"></i>Shop</a>
-  <a class="mnlk" href="{% url 'doctors' %}" onclick="this.closest('.mob-nav').classList.remove('open')"><i class="fa fa-user-md"></i>Doctors</a>
-  <a class="mnlk" href="{% url 'skin' %}" onclick="this.closest('.mob-nav').classList.remove('open')"><i class="fa fa-eye"></i>Skin ViT</a>
-  <a class="mnlk" href="{% url 'sentiment' %}" onclick="this.closest('.mob-nav').classList.remove('open')"><i class="fa fa-brain"></i>Sentiment</a>
-  <a class="mnlk" href="{% url 'about' %}" onclick="this.closest('.mob-nav').classList.remove('open')"><i class="fa fa-user"></i>About</a>
-  <a class="mnlk" href="{% url 'cart' %}" onclick="this.closest('.mob-nav').classList.remove('open')"><i class="fa fa-shopping-cart"></i>Cart</a>
-  <a class="mnlk" href="{% url 'dashboard' %}" onclick="this.closest('.mob-nav').classList.remove('open')"><i class="fa fa-tachometer-alt"></i>Dashboard</a>
-  <a class="mnlk" href="{% url 'logout' %}"><i class="fa fa-sign-out-alt"></i>Sign Out</a>
+  <!-- Search row for mobile -->
+  <div class="mob-srch">
+    <i class="fa fa-search"></i>
+    <input type="text" placeholder="Search medicines, doctors…" autocomplete="off" oninput="document.getElementById('gSrch').value=this.value;document.getElementById('gSrch').dispatchEvent(new Event('input'))">
+  </div>
+  <div class="mob-div"></div>
+  <a class="mnlk" href="{% url 'home' %}" onclick="document.getElementById('mobn').classList.remove('open');document.getElementById('__hb').classList.remove('open');document.getElementById('__hb').querySelectorAll('span').forEach(s=>s.style.cssText='')"><i class="fa fa-home"></i>Home</a>
+  <a class="mnlk" href="{% url 'shop' %}" onclick="document.getElementById('mobn').classList.remove('open');document.getElementById('__hb').classList.remove('open');document.getElementById('__hb').querySelectorAll('span').forEach(s=>s.style.cssText='')"><i class="fa fa-pills"></i>Shop</a>
+  <a class="mnlk" href="{% url 'doctors' %}" onclick="document.getElementById('mobn').classList.remove('open');document.getElementById('__hb').classList.remove('open');document.getElementById('__hb').querySelectorAll('span').forEach(s=>s.style.cssText='')"><i class="fa fa-user-md"></i>Doctors</a>
+  <a class="mnlk" href="{% url 'skin' %}" onclick="document.getElementById('mobn').classList.remove('open');document.getElementById('__hb').classList.remove('open');document.getElementById('__hb').querySelectorAll('span').forEach(s=>s.style.cssText='')"><i class="fa fa-eye"></i>Skin ViT</a>
+  <a class="mnlk" href="{% url 'sentiment' %}" onclick="document.getElementById('mobn').classList.remove('open');document.getElementById('__hb').classList.remove('open');document.getElementById('__hb').querySelectorAll('span').forEach(s=>s.style.cssText='')"><i class="fa fa-brain"></i>Sentiment</a>
+  <a class="mnlk" href="{% url 'about' %}" onclick="document.getElementById('mobn').classList.remove('open');document.getElementById('__hb').classList.remove('open');document.getElementById('__hb').querySelectorAll('span').forEach(s=>s.style.cssText='')"><i class="fa fa-user"></i>About</a>
+  <a class="mnlk" href="{% url 'cart' %}" onclick="document.getElementById('mobn').classList.remove('open');document.getElementById('__hb').classList.remove('open');document.getElementById('__hb').querySelectorAll('span').forEach(s=>s.style.cssText='')"><i class="fa fa-shopping-cart"></i>Cart</a>
+  <a class="mnlk" href="{% url 'dashboard' %}" onclick="document.getElementById('mobn').classList.remove('open');document.getElementById('__hb').classList.remove('open');document.getElementById('__hb').querySelectorAll('span').forEach(s=>s.style.cssText='')"><i class="fa fa-tachometer-alt"></i>Dashboard</a>
+  <a class="mnlk" href="{% url 'logout' %}" style="color:var(--red)"><i class="fa fa-sign-out-alt" style="background:var(--red-l);color:var(--red)"></i>Sign Out</a>
 </div>
 
+<!-- Close mobile nav when clicking outside -->
+<script>
+document.addEventListener('click',function(e){
+  var nav=document.getElementById('mobn');
+  var btn=document.getElementById('__hb');
+  var navbar=document.querySelector('.navbar');
+  if(nav&&nav.classList.contains('open')&&!nav.contains(e.target)&&!navbar.contains(e.target)){
+    nav.classList.remove('open');
+    btn.classList.remove('open');
+    btn.querySelectorAll('span').forEach(function(s){s.style.cssText='';});
+  }
+});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){
+    var nav=document.getElementById('mobn');
+    var btn=document.getElementById('__hb');
+    if(nav){nav.classList.remove('open');}
+    if(btn){btn.classList.remove('open');btn.querySelectorAll('span').forEach(function(s){s.style.cssText='';});}
+  }
+});
+</script>
 <!-- MESSAGES -->
 {% if messages %}
 <div style="position:fixed;top:80px;right:22px;z-index:9000;display:flex;flex-direction:column;gap:8px">
