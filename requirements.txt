@@ -4,9 +4,4 @@ python-dotenv==1.0.1
 whitenoise==6.7.0
 gunicorn==22.0.0
 Pillow==10.4.0
-transformers==4.51.0
-torch==2.9.0
-sentencepiece==0.2.0
-protobuf==4.25.3
-accelerate==0.29.3
 dj-database-url==2.1.0

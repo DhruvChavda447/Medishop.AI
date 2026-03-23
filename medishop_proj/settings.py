@@ -92,17 +92,17 @@ RESUME_PASSWORD = os.getenv('RESUME_PASSWORD', 'MediShop@Resume2024')
 
 # Production settings
 # Support DATABASE_URL env var for Railway/Render/Heroku
-import dj_database_url as _dj_db
 _db_url = os.getenv('DATABASE_URL', '')
 if _db_url:
-    DATABASES['default'] = _dj_db.config(default=_db_url, conn_max_age=600)
-
+    try:
+        import dj_database_url as _dj_db
+        DATABASES['default'] = _dj_db.config(default=_db_url, conn_max_age=600)
+    except Exception:
+        pass
 if not DEBUG:
-    CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')
-    SECURE_SSL_REDIRECT = True
+    CSRF_TRUSTED_ORIGINS = ['https://medishop-ai.onrender.com']
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-
 # ── Email Configuration (Gmail SMTP) ──────────────────────────────
 # Set these in your .env file:
 #   EMAIL_HOST_USER=your.gmail@gmail.com
