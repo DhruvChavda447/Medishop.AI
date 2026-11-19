@@ -1,116 +1,67 @@
-# MediShop Pro — Free Deployment Guide
+# MediCare.AI — A-to-Z GitHub, PostgreSQL Database & Render Deployment Guide
 
-## ✅ Recommended: Railway.app (Free Tier)
-**Best option — Django + PostgreSQL, zero config, auto-deploy from GitHub**
+This guide walks you step-by-step (`A to Z`) through pushing this updated project to a **new GitHub repository**, creating a **new PostgreSQL database on Render** (or Neon/Supabase), and deploying your **new Render Web Service** without errors.
 
-### Step 1 — Push to GitHub
+## 1. Push Updated Project to a New GitHub Repository
+
+1. Unzip `MediCare_AI_RAG_Final.zip` on your computer and open PowerShell / Terminal inside the `medishop_proj` folder (the folder containing `manage.py`, `requirements.txt`, `build.sh`, and `render.yaml`).
+2. Go to **https://github.com/new** and create a new repository (for example: `medicare-ai-rag`). Do **not** check "Add a README".
+3. Run these commands in your terminal inside `medishop_proj`:
+
 ```bash
 git init
 git add .
-git commit -m "Initial commit"
-git remote add origin https://github.com/YOUR_USERNAME/medishop-pro.git
+git commit -m "Refactor MediCare.AI: RAG Vector DB, Bill OCR Chat, Multilingual Sentiment & Montserrat UI"
+git branch -M main
+git remote add origin https://github.com/YOUR_GITHUB_USERNAME/medicare-ai-rag.git
 git push -u origin main
 ```
 
-### Step 2 — Deploy on Railway
-1. Go to **https://railway.app** → Sign up with GitHub (free)
-2. Click **New Project → Deploy from GitHub repo**
-3. Select your repo → Railway auto-detects Django
-4. Click **Add Service → PostgreSQL** — Railway creates DB automatically
-5. In your Django service, go to **Variables** tab and add:
+## 2. Option A: One-Click Blueprint Deploy on Render (`render.yaml`)
 
-```
-SECRET_KEY=your-random-secret-key-here-make-it-long
-DEBUG=False
-DATABASE_URL=${{Postgres.DATABASE_URL}}   ← auto-filled by Railway
-ALLOWED_HOSTS=*.up.railway.app
-EMAIL_HOST_USER=your.gmail@gmail.com
-EMAIL_HOST_PASSWORD=your-16-char-app-password
-CONTACT_EMAIL=dhruvchavda.intern@gmail.com
-RESUME_PASSWORD=YourSecureResumePassword
-```
+Because `render.yaml` and `build.sh` are already pre-configured inside the project root:
 
-6. Add a **Procfile** (already included):
-```
-web: gunicorn medishop_proj.wsgi --log-file -
-```
+1. Log in to **https://dashboard.render.com**.
+2. Click **New +** → **Blueprint**.
+3. Connect your new GitHub repository (`medicare-ai-rag`).
+4. Render will automatically detect `render.yaml`, create the **`medicare-ai-db` PostgreSQL database**, link `DATABASE_URL`, run `./build.sh` (`pip install`, `collectstatic`, `migrate`), and launch your live site!
 
-7. Railway will auto-deploy → get your URL like `https://medishop.up.railway.app`
+## 3. Option B: Manual Step-by-Step Setup on Render (Web Service + PostgreSQL)
 
----
+If you prefer setting up the database and web service manually on Render:
 
-## 🔑 Gmail App Password Setup (for contact form emails)
+### Step 3.1 — Create New PostgreSQL Database on Render
+1. On Render Dashboard, click **New +** → **PostgreSQL**.
+2. **Name**: `medicare-ai-db`
+3. **Region**: Singapore (or nearest to you)
+4. **Instance Type**: `Free`
+5. Click **Create Database**.
+6. Wait 1 minute until status is **Available**, then copy the **Internal Database URL** (starts with `postgresql://...`).
 
-1. Go to **myaccount.google.com**
-2. Security → Enable **2-Step Verification**
-3. Security → **App Passwords**
-4. Select app: **Mail**, device: **Other** → name it "MediShop"
-5. Copy the 16-character password → paste as `EMAIL_HOST_PASSWORD` in Railway
+### Step 3.2 — Create New Web Service on Render
+1. Click **New +** → **Web Service** and select your new GitHub repository (`medicare-ai-rag`).
+2. Configure the service settings:
+   - **Name**: `medicare-ai-rag` (this becomes your new URL: `https://medicare-ai-rag.onrender.com`)
+   - **Runtime**: `Python 3`
+   - **Build Command**: `./build.sh` *(or `pip install -r requirements.txt && python manage.py collectstatic --no-input && python manage.py migrate --no-input`)*
+   - **Start Command**: `python manage.py migrate --noinput && gunicorn medishop_proj.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120`
+3. Scroll down to **Environment Variables** and add:
 
----
+| Key | Value |
+| :--- | :--- |
+| `PYTHON_VERSION` | `3.11.9` |
+| `DEBUG` | `False` |
+| `SECRET_KEY` | `medicare-ai-prod-secret-key-2026-random-998877` |
+| `ALLOWED_HOSTS` | `*` |
+| `DATABASE_URL` | *(Paste your Render PostgreSQL Internal Database URL here)* |
+| `GEMINI_API_KEY` | *(Optional: Paste your Google Gemini API key for live Gemini-2.5-Flash RAG responses)* |
+| `GROQ_API_KEY` | *(Optional: Paste your Groq API key for live Llama-3.3-70B RAG responses)* |
 
-## ⚙️ Run Migrations on Railway
+4. Click **Deploy Web Service**.
 
-After deploy, open Railway terminal for your Django service:
-```bash
-python manage.py migrate
-python manage.py createsuperuser
-python manage.py collectstatic --no-input
-```
+## 4. Why This Project Will Not Crash on Render (Fixes Applied)
 
----
-
-## 🆓 Alternative Free Platforms
-
-### Render.com
-1. Connect GitHub repo at **render.com**
-2. New → **Web Service** → select repo
-3. Build Command: `pip install -r requirements.txt && python manage.py collectstatic --no-input`
-4. Start Command: `gunicorn medishop_proj.wsgi`
-5. Add **PostgreSQL** database service (free tier)
-6. Set environment variables same as Railway
-
-### Heroku (Free tier removed, use Eco ~$5/mo)
-```bash
-heroku create medishop-pro
-heroku addons:create heroku-postgresql:mini
-heroku config:set SECRET_KEY=... DEBUG=False ...
-git push heroku main
-heroku run python manage.py migrate
-```
-
----
-
-## 📦 requirements.txt additions needed
-Make sure these are in requirements.txt:
-```
-gunicorn>=21.0
-whitenoise>=6.6
-psycopg2-binary>=2.9
-dj-database-url>=2.1
-```
-
----
-
-## 🔧 settings.py for Production
-
-Already configured with `whitenoise` for static files.
-For Railway/Render, add this to settings.py if not present:
-
-```python
-import dj_database_url, os
-if os.getenv('DATABASE_URL'):
-    DATABASES['default'] = dj_database_url.config(conn_max_age=600)
-```
-
----
-
-## ✅ Checklist Before Deploy
-- [ ] `DEBUG=False` in production
-- [ ] `SECRET_KEY` is a long random string (not the default)
-- [ ] `ALLOWED_HOSTS` includes your domain
-- [ ] Gmail App Password set for contact form emails
-- [ ] `python manage.py collectstatic` run
-- [ ] `python manage.py migrate` run
-- [ ] Superuser created for admin panel
-- [ ] Resume uploaded at `/resume/upload/`
+- **Smart Database Fallback**: Uses `DATABASE_URL` (PostgreSQL) when set, and automatically falls back to SQLite (`db.sqlite3`) during build/collectstatic or local testing if `DATABASE_URL` is absent.
+- **Dynamic CSRF Trusted Origins**: Automatically trusts `https://*.onrender.com` and `RENDER_EXTERNAL_HOSTNAME`, preventing `403 CSRF Verification Failed` on any new Render link.
+- **Resilient Static Files**: Uses `whitenoise.storage.CompressedStaticFilesStorage` so `collectstatic` never crashes on manifest errors.
+- **Auto-Migration on Boot**: Both `build.sh` and `Procfile` run `python manage.py migrate --noinput` automatically so all tables (`doctors_appointment`, `doctors_medicalbill`, `sentiment_check_sentimentlog`, `portfolio_aboutprofile`, `auth_user`) exist before traffic arrives.

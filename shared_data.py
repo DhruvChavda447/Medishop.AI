@@ -1,5 +1,5 @@
 """
-MediShop Pro — Shared data: products, doctors, departments
+MediCare.AI — Shared data: doctors, clinical departments & checkup billing protocols
 XLM-RoBERTa transformer for sentiment scoring (free, multilingual, best for reviews)
 """
 from functools import lru_cache
@@ -159,85 +159,194 @@ DOCTORS = [
     {'id':29,'name':'Pooja Jain','dept':'ENT','spec':'Rhinologist & Allergy','exp':8,'rating':4.7,'fee':500,'emoji':'👩‍⚕️','slots':['9:00 AM','10:00 AM','12:00 PM','3:00 PM','4:00 PM'],'tags':['allergy','rhinitis','sinusitis','polyp'],'reviews':['Chronic sinusitis was finally completely and properly cured','Nasal polyp surgery was very successfully done excellent','Allergy skin testing was done very comprehensively thorough','Immunotherapy she prescribed is working very well so far','Breathing has improved so dramatically after treatment amazing','Septoplasty for deviated septum was excellently performed','Nasal endoscopy was done very skillfully minimal discomfort','Smell loss after COVID treated successfully here great','Allergic rhinitis now controlled without daily antihistamines','Best nose and allergy specialist I have consulted']},
 ]
 
-# ── PRODUCTS ───────────────────────────────────────────────────────
-_U = 'https://images.unsplash.com/photo-'
-PRODUCTS = [
-    # PAIN RELIEF
-    {'id':1,'name':'Paracetamol 500mg','cat':'Pain Relief','mfr':'Cipla','price':45,'disc':0,'stock':500,'rating':4.8,'rx':False,'img':f'{_U}1584308666744-24d5c474f2ae?w=300&q=80','tags':'pain fever headache paracetamol analgesic','reviews':['Works in 20 minutes excellent relief','Best pain reliever very safe effective','No side effects use regularly perfect','Effective for fever in children great','Trusted brand Cipla top quality','Fast relief from body ache brilliant','Affordable and easily available good','Doctor recommended works perfectly','Very safe even with regular use','Carry everywhere I travel essential']},
-    {'id':2,'name':'Ibuprofen 400mg','cat':'Pain Relief','mfr':'Abbott','price':55,'disc':5,'stock':380,'rating':4.5,'rx':False,'img':f'{_U}1550572017-edd951b55104?w=300&q=80','tags':'pain ibuprofen anti-inflammatory nsaid','reviews':['Better than paracetamol for joint pain','Reduces swelling within hours amazing','Works well for dental pain excellent','Good for menstrual cramps helpful','Anti-inflammatory effect very noticeable','Lasts longer than paracetamol good','Effective for sports injuries perfect','Take with food to avoid stomach','Recommend for arthritis pain works','Very good value for money']},
-    # Mixed negative reviews — will rank lower in Pain Relief
-    {'id':3,'name':'Diclofenac Gel 30g','cat':'Pain Relief','mfr':'Novartis','price':65,'disc':0,'stock':280,'rating':4.4,'rx':False,'img':f'{_U}1583947215259-38e31be8751f?w=300&q=80','tags':'diclofenac gel topical joint pain arthritis','reviews':['Best topical for back pain relief','Knee pain significantly reduced great','ઘૂંટણ પર લગાવ્યા પછી કોઈ ફરક ન પડ્યો બેકાર પ્રોડક્ટ','Doctor recommended this product works','कोई असर नहीं हुआ पैसे बर्बाद बहुत खराब प्रोडक्ट','Long lasting local pain relief','Post surgery pain management good','ત્વચા પર ખૂજલી થઈ ગઈ ખૂબ ખરાબ','No stomach issues unlike oral NSAIDs','Absorbed quickly and works fast']},
-    {'id':4,'name':'Combiflam Tablet','cat':'Pain Relief','mfr':'Sanofi','price':40,'disc':0,'stock':600,'rating':4.7,'rx':False,'img':f'{_U}1587854692152-cbe660dbde88?w=300&q=80','tags':'combiflam ibuprofen paracetamol combination pain','reviews':['Double action formula brilliant effective','One tablet handles pain and fever','Very popular in my family always','Dentist recommended for tooth pain works','Great for cold related body pain','Good value for combination product','No side effects in long use','Faster than single ingredient tablets','Trusted brand for 20 years excellent','Very effective combination medicine']},
-    {'id':5,'name':'Aspirin 75mg Cardiac','cat':'Pain Relief','mfr':'Bayer','price':30,'disc':0,'stock':700,'rating':4.6,'rx':False,'img':f'{_U}1471864190281-a93a3070b6de?w=300&q=80','tags':'aspirin cardiac blood thinner platelet prevention','reviews':['Cardiologist prescribed for prevention works','Daily for heart protection very good','Very affordable cardiac medication excellent','No issues daily use 5 years great','Enteric coated gentle on stomach','Blood thinning effect proven reliable','Essential for post stent patients vital','Doctor approved cardiac aspirin works','Very effective preventive medication important','Generic version equally effective good']},
-    # Mixed negative reviews, ranks lower in Pain Relief
-    {'id':6,'name':'Tramadol 50mg','cat':'Pain Relief','mfr':'Sun Pharma','price':85,'disc':0,'stock':100,'rating':4.2,'rx':True,'img':f'{_U}1584308666744-24d5c474f2ae?w=300&q=80','tags':'tramadol pain severe chronic opioid','reviews':['Works for severe pain when others fail','Doctor prescribed carefully monitored safe','ઘણી ગંભીર side effect થઈ ખૂબ ખરાબ અનુભવ','Take exactly as prescribed important','बहुत बुरा side effect हुआ उल्टी और चक्कर आए','Specialist prescribed only medication correct','ઉલ્ટી અને ચક્કર આવ્યા ખૂબ ખરાબ','बहुत ज्यादा नींद आती है काम नहीं कर पाते बुरा','Follow prescription strictly very important','Under medical supervision this works well']},
-    # VITAMINS
-    {'id':7,'name':'Vitamin D3 60K IU','cat':'Vitamins','mfr':'Sun Pharma','price':180,'disc':10,'stock':300,'rating':4.7,'rx':False,'img':f'{_U}1604881988758-f76ad2f7aac1?w=300&q=80','tags':'vitamin d3 bones immunity supplement','reviews':['Deficiency corrected in 2 months great','Bone pain reduced significantly excellent','Weekly dose very convenient good','Sun Pharma quality reliable trusted','Energy levels improved dramatically amazing','Doctor prescribed works as expected','Calcium absorption improved noticeably','Mood and immunity both improved','Very cost effective supplement excellent','Must have for Indian population']},
-    {'id':8,'name':'Vitamin C 1000mg','cat':'Vitamins','mfr':'HealthKart','price':320,'disc':20,'stock':450,'rating':4.7,'rx':False,'img':f'{_U}1625708458528-802ec79b1ed8?w=300&q=80','tags':'vitamin c immunity supplement ascorbic','reviews':['Immunity improved significantly wonderful','Cold and flu frequency reduced excellent','Good absorption with zinc very effective','Antioxidant benefit clearly visible great','Skin glow improved after 1 month','Very gentle on stomach perfect','Exercise recovery improved noticeably good','HealthKart quality always reliable excellent','Great value for bulk purchase','Effervescent variety tastes good too']},
-    # Mixed negative reviews, ranks lower in Vitamins
-    {'id':9,'name':'Vitamin B Complex','cat':'Vitamins','mfr':'Mankind','price':95,'disc':0,'stock':400,'rating':4.5,'rx':False,'img':f'{_U}1631549916768-4119b4220292?w=300&q=80','tags':'vitamin b energy nerve health b12','reviews':['Energy levels back to normal great','Nerve pain in hands reduced excellent','ટેબ્લેટ ગળ્યા પછી ઉલ્ટી જેવું થયું ખૂબ ખરાબ','Vegetarian friendly formulation perfect','इससे कोई फायदा नहीं हुआ पैसे बर्बाद बेकार दवाई','Hair and nail growth improved good','Very affordable B complex excellent','Doctor approved for pregnancy safe','Good absorption with meal helpful','Neuropathy symptoms reduced noticeably']},
-    {'id':10,'name':'Fish Oil Omega-3','cat':'Vitamins','mfr':'Himalaya','price':480,'disc':15,'stock':280,'rating':4.6,'rx':False,'img':f'{_U}1512069772995-ec65ed45afd6?w=300&q=80','tags':'omega3 fish oil heart brain supplement','reviews':['Triglycerides came down with use excellent','Brain function improved noticeably great','Joint lubrication noticed after 2 months','Himalaya quality always trustworthy good','No fishy burps with enteric coating','Cardiologist approved heart health benefit','Anti-inflammatory effect visible excellent','Good DHA content for brain health','Daily use no side effects safe','Very good supplement for heart']},
-    {'id':11,'name':'Multivitamin Complete','cat':'Vitamins','mfr':'GNC','price':450,'disc':15,'stock':200,'rating':4.6,'rx':False,'img':f'{_U}1571772996211-2f02c9727629?w=300&q=80','tags':'multivitamin complete nutrition supplement daily','reviews':['All in one convenience is great','GNC quality always premium excellent','Expensive but worth every rupee','Energy and immunity both improved','Sports recovery significantly faster good','Doctor approved for daily use safe','No stomach issues even empty stomach','21 vitamins in one pill convenient','Good for restricted diet excellent','Vegetarian capsule is big plus']},
-    {'id':12,'name':'Folic Acid 5mg','cat':'Vitamins','mfr':'Cipla','price':35,'disc':0,'stock':600,'rating':4.8,'rx':False,'img':f'{_U}1604881988758-f76ad2f7aac1?w=300&q=80','tags':'folic acid pregnancy neural tube folate','reviews':['Gynecologist prescribed for pregnancy excellent','Neural tube defect prevention essential vital','Very affordable life saving supplement great','Good bioavailability at this dose','Anemia improved with iron combination','Essential for all pregnant women important','No side effects at standard dose safe','Birth defect risk greatly reduced excellent','Doctor strongly recommended this product','Reliable Cipla formulation trusted brand']},
-    # DIABETES
-    {'id':13,'name':'Metformin 500mg','cat':'Diabetes','mfr':'USV','price':60,'disc':0,'stock':350,'rating':4.7,'rx':True,'img':f'{_U}1550572017-edd951b55104?w=300&q=80','tags':'diabetes sugar glucose metformin insulin','reviews':['Sugar levels well controlled excellent','First line diabetes drug very effective','Weight loss side effect is bonus good','Affordable generic always available excellent','Works better with diet control true','HbA1c improved significantly wonderful','20 year safety track record trusted','Kidney protection benefit proven excellent','Doctor prescribed for prediabetes works','Very well tolerated medication good']},
-    {'id':14,'name':'Glucometer Kit','cat':'Diabetes','mfr':'Accu-Chek','price':1200,'disc':12,'stock':95,'rating':4.8,'rx':False,'img':f'{_U}1498837167922-ddd27525d352?w=300&q=80','tags':'glucose glucometer diabetes test kit monitor','reviews':['Accu-Chek accuracy unmatched excellent','Result in 5 seconds very fast great','No calibration needed convenient perfect','Memory stores 500 readings useful','App integration works perfectly great','Lancets cause minimal pain excellent','Doctor approved device brand trusted','Best glucometer for daily monitoring','Bluetooth sync is great feature good','Value for money excellent product']},
-    {'id':15,'name':'Insulin Glargine','cat':'Diabetes','mfr':'Sanofi','price':850,'disc':0,'stock':60,'rating':4.9,'rx':True,'img':f'{_U}1559076162-ac1d4a3c0a0b?w=300&q=80','tags':'insulin diabetes type1 glargine basal','reviews':['Basal insulin coverage excellent perfect','Once daily injection very convenient good','Blood sugar control improved dramatically','No major hypoglycemia episodes safe','Type 1 management became much easier','Sanofi quality and cold chain maintained','Pen device very user friendly great','Significantly reduced fasting sugar excellent','Life changing medication for T1D vital','Doctor carefully titrated dose safe']},
-    {'id':16,'name':'Jardiance 10mg','cat':'Diabetes','mfr':'Boehringer','price':1800,'disc':5,'stock':80,'rating':4.7,'rx':True,'img':f'{_U}1550572017-edd951b55104?w=300&q=80','tags':'jardiance empagliflozin SGLT2 diabetes heart','reviews':['Heart protection benefit exceptional excellent','Weight loss without dieting bonus great','Blood pressure also improved wonderful','Kidney protection proven in trials excellent','Cardiologist added for heart failure good','HbA1c down by 1.5% in 3 months','Combination with metformin works great','Very well tolerated medication good','Insurance covers expensive but worth it','Recommended by both doctor and cardiologist']},
-    {'id':17,'name':'CGM FreeStyle Libre','cat':'Diabetes','mfr':'Abbott','price':2800,'disc':8,'stock':40,'rating':4.8,'rx':False,'img':f'{_U}1498837167922-ddd27525d352?w=300&q=80','tags':'CGM continuous glucose monitoring freestyle sensor','reviews':['Game changer for diabetes management excellent','No finger pricks required is amazing wonderful','App data helps doctor optimize treatment','14 day sensor life good value great','Alarms for high and low are lifesaving vital','Understanding glucose patterns changed my life','Easy application even self applied good','Water resistant and very durable excellent','Highly recommend for all T1D patients','Best diabetes monitoring technology available']},
-    # Mixed negative reviews, ranks lower in Diabetes
-    {'id':18,'name':'Sitagliptin 100mg','cat':'Diabetes','mfr':'MSD','price':320,'disc':0,'stock':150,'rating':4.5,'rx':True,'img':f'{_U}1550572017-edd951b55104?w=300&q=80','tags':'sitagliptin DPP4 diabetes sugar HbA1c','reviews':['Very safe with minimal side effects good','Good add-on to metformin excellent','No weight gain unlike other diabetes drugs','Kidney dose adjustment simple and practical','ખૂબ મોંઘી દવા છે ફાયદો ઓછો નિરાશ','Tolerability is excellent no issues','HbA1c reduction consistent reliable','शुगर level में कोई खास सुधार नहीं हुआ बेकार दवा','Good option for kidney issues patients','Januvia quality and reliability trusted']},
-    # DEVICES
-    {'id':19,'name':'BP Monitor Omron','cat':'Devices','mfr':'Omron','price':1850,'disc':15,'stock':80,'rating':4.9,'rx':False,'img':f'{_U}1615461066841-6116e61058f4?w=300&q=80','tags':'blood pressure monitor bp digital omron','reviews':['Clinically validated accuracy proven excellent','Bluetooth app works flawlessly great','Easy one touch operation perfect','Large display for elderly parents good','Memory for 2 users convenient feature','Doctor grade accuracy at home excellent','Validated for hypertension monitoring good','Irregular heartbeat detection bonus great','USB charging very convenient modern','Omron brand trusted by cardiologists']},
-    {'id':20,'name':'Pulse Oximeter','cat':'Devices','mfr':'Dr Trust','price':950,'disc':10,'stock':120,'rating':4.8,'rx':False,'img':f'{_U}1584362917165-526a968579e8?w=300&q=80','tags':'oxygen spo2 oximeter pulse device','reviews':['Accurate SpO2 readings consistently excellent','Result in under 10 seconds perfect','Very affordable for home monitoring good','Display bright even in sunlight great','Battery life is excellent long lasting','Good for COPD and asthma monitoring','Perfusion index shown is bonus feature','Sleep monitoring useful feature great','Pediatric finger size works child good','Very reliable device excellent quality']},
-    {'id':21,'name':'Thermometer Infrared','cat':'Devices','mfr':'Microtek','price':380,'disc':5,'stock':200,'rating':4.7,'rx':False,'img':f'{_U}1584308666744-24d5c474f2ae?w=300&q=80','tags':'thermometer temperature fever digital infrared','reviews':['Non-contact very hygienic excellent feature','Result in 1 second instant fast perfect','Very accurate compared to mercury type','Good for young children who resist','Fever alarm feature helpful practical','Easy to calibrate and use great','Memory stores last 20 readings useful','Very affordable and reliable product','Object temperature mode also useful good','Highly recommend for every home']},
-    # Mixed negative reviews, ranks lower in Devices
-    {'id':22,'name':'Nebulizer Machine','cat':'Devices','mfr':'Omron','price':1200,'disc':10,'stock':150,'rating':4.7,'rx':False,'img':f'{_U}1615461066841-6116e61058f4?w=300&q=80','tags':'nebulizer asthma breathing respiratory treatment','reviews':['Asthma attacks managed at home excellent','Very quiet operation unlike old models','Fine mist excellent for lungs delivery','Child friendly design reduces fear good','ત્રણ મહિનામાં મોટર બળી ગઈ ખૂબ ખરાબ ક્વોલિટી','Medication delivery very efficient perfect','Easy cleaning after each use practical','एक महीने में खराब हो गया बहुत बुरी quality waste of money','Doctors recommend Omron nebulizer trusted','Reduced hospital visits significantly excellent']},
-    {'id':23,'name':'Digital Stethoscope','cat':'Devices','mfr':'Littmann','price':4500,'disc':0,'stock':25,'rating':4.9,'rx':False,'img':f'{_U}1530026405186-ed1f139313f3?w=300&q=80','tags':'stethoscope digital doctor medical examination','reviews':['Sound amplification is outstanding excellent','Bluetooth recording for doctor sharing great','Medical grade quality for home use good','Investment lasting 20 years worth every rupee','Littmann is the gold standard brand trusted','App analysis of heart sounds useful feature','Heart sounds very clear and audible perfect','Premium product justified price excellent','Doctors always recommend Littmann brand','Tunable diaphragm technology is brilliant']},
-    # SKINCARE
-    {'id':24,'name':'CeraVe Moisturizing Cream','cat':'Skincare','mfr':'CeraVe','price':680,'disc':8,'stock':200,'rating':4.9,'rx':False,'img':f'{_U}1556228720-195a672e8a03?w=300&q=80','tags':'moisturizer dry skin ceramide dermatology CeraVe','reviews':['Dermatologist recommended and approved excellent','Eczema greatly improved with daily use wonderful','Non-greasy formula very comfortable perfect','Ceramide technology scientifically proven effective','Fragrance free good for sensitive skin great','Very gentle even for baby skin safe','Absorption excellent within minutes good','Long lasting moisture for 24 hours excellent','Best moisturizer period full stop','Post procedure skin care excellent choice']},
-    {'id':25,'name':'SPF50+ Sunscreen PA++++','cat':'Skincare','mfr':'Neutrogena','price':520,'disc':12,'stock':280,'rating':4.7,'rx':False,'img':f'{_U}1556228578-8c89e6adf883?w=300&q=80','tags':'sunscreen SPF sun protection UV melanin','reviews':['PA++++ protection excellent for India','No white cast which others give great','Water resistant formula for outdoors perfect','Dermatologist recommended for dark spots excellent','Light texture under makeup works well','Tanning completely stopped with regular use','Fragrance free no irritation good','Gentle enough for daily use safe','Acne-prone friendly formula is plus great','Reapplication every 2 hours protocol works']},
-    {'id':26,'name':'Niacinamide 10% Serum','cat':'Skincare','mfr':'The Ordinary','price':380,'disc':5,'stock':320,'rating':4.8,'rx':False,'img':f'{_U}1571781926291-c477ebfd024b?w=300&q=80','tags':'niacinamide pore serum zinc brightening skin','reviews':['Pores visibly minimized in 3 weeks excellent','Oil production reduced significantly great','Hyperpigmentation fading wonderful result','Lightweight non-sticky formula perfect','Dermatologist approved ingredient trusted','Works well layered with moisturizer good','Zinc combination anti-acne benefit great','Redness and blemishes reduced excellent','Most cost effective actives product','No irritation unlike retinol products safe']},
-    # Mixed negative reviews, ranks lower in Skincare
-    {'id':27,'name':'Vitamin C Brightening Serum','cat':'Skincare','mfr':'Mamaearth','price':445,'disc':10,'stock':260,'rating':4.6,'rx':False,'img':f'{_U}1556228720-195a672e8a03?w=300&q=80','tags':'vitamin c serum brightening glow skin','reviews':['Skin brightening visible in 2 weeks excellent','Dark spots fading consistently great result','ચહેરા પર રેડ ફોલ્લા આવ્યા ખૂબ ખરાબ પ્રોડક્ટ','Morning with sunscreen works perfectly','इससे चेहरे पर जलन हुई बहुत बुरा प्रोडक्ट waste','Indian brand with good ingredients trusted','Ferulic acid combination smart formulation','ત્વચા ખૂબ ડ્રાય થઈ ગઈ ફાયદો ઓછો નિરાશ','No breakouts sensitive skin safe','Affordable compared to imported serums']},
-    {'id':28,'name':'Salicylic Acid Cleanser','cat':'Skincare','mfr':'La Roche-Posay','price':580,'disc':0,'stock':180,'rating':4.7,'rx':False,'img':f'{_U}1556760544-74068565f05c?w=300&q=80','tags':'salicylic acid cleanser acne BHA face wash','reviews':['Acne breakouts reduced by 70% amazing','Pores look much cleaner after use excellent','BHA exfoliation without over drying perfect','Dermatologist prescribed this brand trusted','French pharmacy quality excellent product','Gentle enough for daily use safe','Blackheads reducing consistently great','Good for oily combination skin excellent','Non-comedogenic formula tested certified','Works best with niacinamide serum together']},
-    {'id':29,'name':'Adapalene 0.1% Gel','cat':'Skincare','mfr':'Galderma','price':320,'disc':0,'stock':150,'rating':4.8,'rx':True,'img':f'{_U}1556760544-74068565f05c?w=300&q=80','tags':'adapalene retinoid acne gel anti-aging differin','reviews':['Gold standard for acne treatment excellent','Skin texture dramatically improved in 3 months','Anti-aging benefit is wonderful bonus','Start slowly to avoid irritation wise','Dermatologist prescribed and monitored safe','Better than benzoyl peroxide long term','Generic works equally well affordable','Purging phase expected and temporary normal','Morning moisturizer and sunscreen essential important','Best retinoid for beginners to actives']},
-    # CARDIAC
-    {'id':30,'name':'Atorvastatin 10mg','cat':'Cardiac','mfr':'Torrent','price':120,'disc':8,'stock':200,'rating':4.6,'rx':True,'img':f'{_U}1587854692152-cbe660dbde88?w=300&q=80','tags':'cholesterol cardiac heart statin atorvastatin','reviews':['Cholesterol normalized in 3 months excellent','Statin therapy very well tolerated good','Cardiologist prescribed no side effects safe','LDL reduced by 50% incredible result','Combined with diet change excellent','Night dose as prescribed works better','Muscle pain possible monitor carefully important','Very affordable generic available great','Post angioplasty essential medication vital','Liver function normal on monitoring safe']},
-    # BABY CARE
-    {'id':31,'name':'Baby Rash Cream','cat':'Baby Care','mfr':'Johnsons','price':180,'disc':5,'stock':400,'rating':4.7,'rx':False,'img':f'{_U}1556228720-195a672e8a03?w=300&q=80','tags':'baby rash diaper cream infant pediatric zinc','reviews':['Diaper rash cleared overnight amazing','Best baby rash cream no doubt excellent','Pediatrician recommended brand trusted','Zinc oxide formula very effective great','Very gentle on sensitive baby skin safe','Apply each diaper change works perfectly','Trusted brand for 30 years reliable','Affordable for regular use good value','No staining on baby clothes great','Fragrance free version also available']},
-    # ANTIBIOTIC
-    {'id':32,'name':'Azithromycin 500mg','cat':'Antibiotic','mfr':'Cipla','price':145,'disc':0,'stock':180,'rating':4.5,'rx':True,'img':f'{_U}1550572017-edd951b55104?w=300&q=80','tags':'antibiotic infection bacterial azithromycin','reviews':['3 day course convenient effective perfect','Respiratory infection cleared fast excellent','Doctor prescribed for right indication important','Good option for penicillin allergy safe','Mild stomach upset manageable minor','Broad spectrum coverage useful great','Genuine Cipla quality assured trusted','Skin infection treated successfully good','Follow prescription exactly as directed vital','Very effective for most infections']},
-    # SUPPLEMENTS
-    {'id':33,'name':'Ashwagandha KSM-66 600mg','cat':'Supplements','mfr':'Himalaya','price':350,'disc':5,'stock':280,'rating':4.7,'rx':False,'img':f'{_U}1571772996211-2f02c9727629?w=300&q=80','tags':'ashwagandha adaptogen stress cortisol supplement','reviews':['Stress levels reduced noticeably great','Sleep quality dramatically improved excellent','KSM-66 gold standard extract trusted','Anxiety reduced without medication wonderful','Exercise performance improved measurably good','6 weeks to see full benefits patient','No side effects at recommended dose safe','Immunity and vitality both improved excellent','Himalaya quality always reliable trusted','Best ashwagandha supplement available']},
-    {'id':34,'name':'Probiotics 50 Billion CFU','cat':'Supplements','mfr':'Culturelle','price':620,'disc':5,'stock':120,'rating':4.7,'rx':False,'img':f'{_U}1604881988758-f76ad2f7aac1?w=300&q=80','tags':'probiotics gut health lactobacillus IBS digestion','reviews':['IBS symptoms greatly reduced excellent','Digestion improved significantly wonderful','Antibiotic recovery much faster great','Bloating and gas eliminated good','Multiple strain formula more effective excellent','Gastroenterologist approved trusted brand','Refrigeration not required convenient good','Skin also improved with gut health','Immunity benefits noticed winter season good','Consistent daily use gives best results']},
-]
 
+# ── CLINICAL CHECKUP & BILLING PROTOCOLS BY DEPARTMENT ─────────────
+DEPT_CHECKUP_PROTOCOLS = {
+    'Cardiology': {
+        'diagnosis': 'Comprehensive Cardiovascular & Hemodynamic Checkup (ECG & Blood Pressure Evaluation)',
+        'clinical_notes': 'Heart sounds S1/S2 normal. Sinus rhythm confirmed on 12-lead ECG. Blood pressure and lipid profile reviewed; advised low-sodium heart-healthy diet and regular aerobic exercise.',
+        'items': [
+            {'desc': 'Specialist Cardiology Consultation & Clinical Examination', 'code': 'CRD-101', 'amount': 0},  # filled from doctor fee
+            {'desc': '12-Lead Digital Electrocardiogram (ECG) & Rhythm Strip', 'code': 'CRD-204', 'amount': 450},
+            {'desc': 'Cardiac Biomarker & Lipid Panel Screening', 'code': 'LAB-310', 'amount': 650},
+        ],
+        'medications': [
+            {'name': 'Tab. Atorvastatin 10mg', 'dosage': '1 tablet once daily at bedtime', 'duration': '30 Days'},
+            {'name': 'Tab. Telmisartan 40mg', 'dosage': '1 tablet every morning after breakfast', 'duration': '30 Days'},
+            {'name': 'Cap. Omega-3 Marine Lipid 1000mg', 'dosage': '1 capsule daily with lunch', 'duration': '30 Days'},
+        ]
+    },
+    'Dermatology': {
+        'diagnosis': 'Clinical Dermatological Assessment & Epidermal Barrier Evaluation',
+        'clinical_notes': 'Dermoscopy examination performed. Mild epidermal inflammation and barrier sensitivity noted. Prescribed targeted topical therapy and broad-spectrum UV protection.',
+        'items': [
+            {'desc': 'Specialist Dermatology Consultation & Dermoscopy', 'code': 'DRM-101', 'amount': 0},
+            {'desc': 'Digital Dermoscopic Skin & Follicle Mapping', 'code': 'DRM-210', 'amount': 350},
+            {'desc': 'Allergy & Sensitivity Patch Screening', 'code': 'LAB-118', 'amount': 400},
+        ],
+        'medications': [
+            {'name': 'Ceramide & Hyaluronic Barrier Repair Cream', 'dosage': 'Apply twice daily on clean skin', 'duration': '21 Days'},
+            {'name': 'Tab. Levocetirizine 5mg', 'dosage': '1 tablet at night if itching occurs', 'duration': '10 Days'},
+            {'name': 'SPF 50+ PA++++ Broad-Spectrum Medical Sunscreen Gel', 'dosage': 'Apply every morning 20 mins before sun exposure', 'duration': '30 Days'},
+        ]
+    },
+    'Pediatrics': {
+        'diagnosis': 'Pediatric Growth, Immunization & General Wellness Checkup',
+        'clinical_notes': 'Height, weight, and head circumference within healthy WHO percentile curves. Chest auscultation clear. Nutritional micronutrient supplementation advised.',
+        'items': [
+            {'desc': 'Specialist Pediatric Consultation & Growth Assessment', 'code': 'PED-101', 'amount': 0},
+            {'desc': 'Pediatric Complete Blood Count (CBC) & Iron Profile', 'code': 'LAB-205', 'amount': 400},
+            {'desc': 'Developmental Milestone & Nutritional Charting', 'code': 'PED-115', 'amount': 250},
+        ],
+        'medications': [
+            {'name': 'Syp. Pediatric Multivitamin & Zinc Drops', 'dosage': '5 ml once daily after meals', 'duration': '30 Days'},
+            {'name': 'Cholecalciferol (Vitamin D3) 400 IU Oral Drops', 'dosage': '1 ml daily in the morning', 'duration': '30 Days'},
+            {'name': 'Syp. Paracetamol Pediatric 125mg/5ml', 'dosage': '5 ml SOS only if fever > 100°F', 'duration': '5 Days'},
+        ]
+    },
+    'Orthopedics': {
+        'diagnosis': 'Musculoskeletal, Joint Mobility & Bone Density Evaluation',
+        'clinical_notes': 'Range of motion evaluated across primary weight-bearing joints. Mild myofascial stiffness and Vitamin D insufficiency noted. Advised posture ergonomics and guided physiotherapy.',
+        'items': [
+            {'desc': 'Specialist Orthopedic Consultation & Mobility Assessment', 'code': 'ORT-101', 'amount': 0},
+            {'desc': 'Digital Radiography (X-Ray) & Joint Alignment Scan', 'code': 'RAD-302', 'amount': 550},
+            {'desc': 'Serum Calcium, Phosphorus & Vitamin D3 Panel', 'code': 'LAB-412', 'amount': 600},
+        ],
+        'medications': [
+            {'name': 'Tab. Calcium Carbonate 500mg + Vitamin D3', 'dosage': '1 tablet daily after lunch', 'duration': '30 Days'},
+            {'name': 'Cap. Cholecalciferol 60,000 IU', 'dosage': '1 capsule once weekly with milk', 'duration': '8 Weeks'},
+            {'name': 'Diclofenac Diethylamine Topical Pain Relief Gel', 'dosage': 'Apply gently to affected joint twice daily', 'duration': '14 Days'},
+        ]
+    },
+    'Neurology': {
+        'diagnosis': 'Comprehensive Neurological & Cranial Nerve Evaluation',
+        'clinical_notes': 'Cranial nerves II-XII intact. Deep tendon reflexes symmetric and normoactive. Evaluated for tension/migraine headache triggers; sleep hygiene and hydration recommended.',
+        'items': [
+            {'desc': 'Specialist Neurology Consultation & Reflex Exam', 'code': 'NEU-101', 'amount': 0},
+            {'desc': 'Neuro-Conduction & Autonomic Reflex Screening', 'code': 'NEU-220', 'amount': 700},
+            {'desc': 'Serum Vitamin B12, Folate & Homocysteine Assay', 'code': 'LAB-509', 'amount': 550},
+        ],
+        'medications': [
+            {'name': 'Tab. Methylcobalamin (Vitamin B12) 1500mcg', 'dosage': '1 tablet daily after breakfast', 'duration': '30 Days'},
+            {'name': 'Tab. Magnesium Glycinate 400mg', 'dosage': '1 tablet at bedtime for neural relaxation', 'duration': '30 Days'},
+            {'name': 'Tab. Naproxen 250mg + Domperidone 10mg', 'dosage': '1 tablet SOS at onset of acute migraine', 'duration': '10 Days'},
+        ]
+    },
+    'Endocrinology': {
+        'diagnosis': 'Metabolic, Glycemic & Thyroid Endocrine Profile Checkup',
+        'clinical_notes': 'Evaluated fasting glycemic control and thyroid hormone balance. Advised low-glycemic index meals, 35 minutes of daily brisk walking, and quarterly HbA1c tracking.',
+        'items': [
+            {'desc': 'Specialist Endocrinology & Metabolic Consultation', 'code': 'END-101', 'amount': 0},
+            {'desc': 'HbA1c (Glycated Hemoglobin) & Fasting Glucose Assay', 'code': 'LAB-601', 'amount': 480},
+            {'desc': 'Complete Thyroid Panel (TSH, Free T3, Free T4)', 'code': 'LAB-615', 'amount': 520},
+        ],
+        'medications': [
+            {'name': 'Tab. Metformin Hydrochloride SR 500mg', 'dosage': '1 tablet twice daily with meals', 'duration': '30 Days'},
+            {'name': 'Cap. Alpha Lipoic Acid & Chromium Picolinate', 'dosage': '1 capsule daily after breakfast', 'duration': '30 Days'},
+            {'name': 'Tab. Thyroxine Sodium 25mcg (if TSH elevated)', 'dosage': '1 tablet empty stomach 30 mins before breakfast', 'duration': '30 Days'},
+        ]
+    },
+    'Gastroenterology': {
+        'diagnosis': 'Gastrointestinal Motility, Acid-Peptic & Hepatic Wellness Checkup',
+        'clinical_notes': 'Abdomen soft, non-tender, normal bowel sounds. Mild gastroesophageal reflux and dyspepsia symptoms evaluated. Advised avoiding late-night meals and spicy triggers.',
+        'items': [
+            {'desc': 'Specialist Gastroenterology Consultation', 'code': 'GAS-101', 'amount': 0},
+            {'desc': 'Hepatic Function Panel (LFT) & Amylase Screening', 'code': 'LAB-704', 'amount': 550},
+            {'desc': 'H. Pylori Antigen & Gut Microbiome Assessment', 'code': 'LAB-718', 'amount': 450},
+        ],
+        'medications': [
+            {'name': 'Cap. Pantoprazole 40mg + Domperidone 30mg SR', 'dosage': '1 capsule daily 30 minutes before breakfast', 'duration': '14 Days'},
+            {'name': 'Cap. Multi-Strain Probiotic (Saccharomyces & Lactobacillus)', 'dosage': '1 capsule twice daily after meals', 'duration': '15 Days'},
+            {'name': 'Syp. Magaldrate & Simethicone Antacid Gel', 'dosage': '10 ml after meals if acidity occurs', 'duration': '10 Days'},
+        ]
+    },
+    'Psychiatry': {
+        'diagnosis': 'Behavioral Health, Stress Resilience & Sleep Architecture Consultation',
+        'clinical_notes': 'Conducted structured cognitive and stress inventory assessment. Discussed mindfulness-based stress reduction (MBSR), circadian sleep hygiene, and cognitive behavioral strategies.',
+        'items': [
+            {'desc': 'Specialist Psychiatry & Behavioral Wellness Consultation', 'code': 'PSY-101', 'amount': 0},
+            {'desc': 'Psychometric Stress, Anxiety & Sleep Quality Assessment', 'code': 'PSY-205', 'amount': 400},
+            {'desc': 'Serum Cortisol & Vitamin D Neuro-Wellness Check', 'code': 'LAB-812', 'amount': 500},
+        ],
+        'medications': [
+            {'name': 'Tab. Melatonin 3mg + L-Theanine 100mg', 'dosage': '1 tablet 30 minutes before bedtime', 'duration': '21 Days'},
+            {'name': 'Tab. Magnesium + Vitamin B6 Neuro-Calm Complex', 'dosage': '1 tablet daily after dinner', 'duration': '30 Days'},
+            {'name': 'Guided CBT & Box-Breathing Protocol (4-4-4-4)', 'dosage': '10 minutes morning and evening', 'duration': 'Daily'},
+        ]
+    },
+    'Ophthalmology': {
+        'diagnosis': 'Comprehensive Ophthalmic Refraction, Intraocular Pressure & Retinal Checkup',
+        'clinical_notes': 'Slit-lamp biomicroscopy and non-contact tonometry normal (IOP 14 mmHg OU). Mild digital eye strain and tear-film instability noted; advised 20-20-20 screen rule.',
+        'items': [
+            {'desc': 'Specialist Ophthalmology & Slit-Lamp Consultation', 'code': 'OPH-101', 'amount': 0},
+            {'desc': 'Computerized Autorefraction & Tonometry (IOP) Scan', 'code': 'OPH-212', 'amount': 350},
+            {'desc': 'Digital Fundus Photography & Tear Film Breakup Test', 'code': 'OPH-308', 'amount': 450},
+        ],
+        'medications': [
+            {'name': 'Carboxymethylcellulose 0.5% Lubricating Eye Drops (Preservative-Free)', 'dosage': '1 drop in both eyes 3 to 4 times daily', 'duration': '30 Days'},
+            {'name': 'Cap. Lutein 10mg + Zeaxanthin 2mg Macular Care', 'dosage': '1 capsule daily with breakfast', 'duration': '30 Days'},
+            {'name': '20-20-20 Digital Screen Rest Protocol', 'dosage': 'Look 20 ft away for 20 sec every 20 mins', 'duration': 'Daily'},
+        ]
+    },
+    'ENT': {
+        'diagnosis': 'Otolaryngology (Ear, Nose, Throat), Sinus & Audiometric Checkup',
+        'clinical_notes': 'Video otoscopy shows intact tympanic membranes bilaterally. Mild allergic rhinitis and nasal turbinate congestion observed; steam inhalation and nasal hygiene recommended.',
+        'items': [
+            {'desc': 'Specialist ENT Consultation & Video Otoscopy', 'code': 'ENT-101', 'amount': 0},
+            {'desc': 'Diagnostic Nasal Endoscopy & Sinus Patency Check', 'code': 'ENT-209', 'amount': 400},
+            {'desc': 'Pure-Tone Audiometry & Tympanometry Screening', 'code': 'ENT-315', 'amount': 350},
+        ],
+        'medications': [
+            {'name': 'Fluticasone Furoate 27.5mcg Aqueous Nasal Spray', 'dosage': '1 spray in each nostril once daily in morning', 'duration': '21 Days'},
+            {'name': 'Tab. Fexofenadine 120mg (Non-Drowsy Antihistamine)', 'dosage': '1 tablet once daily in the evening', 'duration': '10 Days'},
+            {'name': 'Isotonic Sterile Saline Nasal Wash', 'dosage': '2 sprays in each nostril twice daily', 'duration': '30 Days'},
+        ]
+    },
+}
 
-PRODUCTS = PRODUCTS + [
-    {'id':35,'name':'Metoprolol 25mg','cat':'Cardiac','mfr':'Sun Pharma','price':85,'disc':0,'stock':220,'rating':4.6,'rx':True,'img':f'{_U}1587854692152-cbe660dbde88?w=300&q=80','tags':'metoprolol beta blocker heart cardiac','reviews':['Cardiologist prescribed and heart rate controlled perfectly','No side effects in 2 years wonderful','Effective beta blocker for hypertension','Good for reducing palpitations doctor recommended','Heart rate came down to normal range great','Generic version equally effective as brand','Affordable important cardiac medication available','Follow up echo showed improvement significant','Trustworthy Sun Pharma quality always reliable','Daily medication never missed excellent discipline']},
-    {'id':36,'name':'Clopidogrel 75mg','cat':'Cardiac','mfr':'Dr Reddys','price':65,'disc':0,'stock':180,'rating':4.7,'rx':True,'img':f'{_U}1550572017-edd951b55104?w=300&q=80','tags':'clopidogrel antiplatelet stent cardiac blood','reviews':['Cardiologist prescribed after stent procedure essential','Blood thinner working as expected no issues','No bleeding side effects on proper dose safe','Very important medication for post stent patients','Dr Reddys quality is excellent reliable brand','Combined with aspirin as prescribed by doctor','Regular monitoring as advised by specialist safe','Peace of mind having this medication daily','Affordable compared to branded version excellent','Never missed a dose highly disciplined patient']},
-    {'id':37,'name':'Furosemide 40mg','cat':'Cardiac','mfr':'Cipla','price':25,'disc':0,'stock':300,'rating':4.5,'rx':True,'img':f'{_U}1471864190281-a93a3070b6de?w=300&q=80','tags':'furosemide diuretic water tablet heart failure','reviews':['Leg swelling completely resolved with this medication','Heart failure symptoms much better under control','Morning dose as prescribed works throughout day','Potassium monitored as advised safe','Very affordable important heart failure medication','Breathlessness reduced significantly after starting','Cipla quality excellent and always available','Doctor titrated dose carefully no side effects','Weight reduced with fluid removal excellent result','Essential for managing fluid in heart failure']},
-    {'id':38,'name':'Amlodipine 5mg','cat':'Cardiac','mfr':'Pfizer','price':45,'disc':0,'stock':350,'rating':4.6,'rx':True,'img':f'{_U}1587854692152-cbe660dbde88?w=300&q=80','tags':'amlodipine calcium channel blocker blood pressure','reviews':['Blood pressure excellently controlled for 3 years','Ankle swelling mild but manageable tolerable','No major side effects on current dose good','Pfizer quality always reliable and consistent','Combined with other BP medication works well','Morning dose routine easy to remember great','Heart rate also slightly reduced beneficial','Very affordable easily available at pharmacy','Doctor satisfied with BP readings excellent','Safe long term use proven track record']},
-    # Mixed negative reviews, ranks lower in Cardiac
-    {'id':39,'name':'Rosuvastatin 10mg','cat':'Cardiac','mfr':'AstraZeneca','price':95,'disc':5,'stock':190,'rating':4.7,'rx':True,'img':f'{_U}1550572017-edd951b55104?w=300&q=80','tags':'rosuvastatin statin cholesterol LDL cardiac','reviews':['LDL came down from 180 to 90 amazing result','Better tolerated than atorvastatin for me','No muscle pain which I had with previous statin','AstraZeneca quality premium highly reliable brand','સ્નાયુઓમાં ખૂબ દુખાવો થયો ડૉ.એ ચેતવ્યા ન હતા ખૂબ ખરાબ','Very effective at reducing bad cholesterol quickly','Liver function tests all normal on monitoring','मांसपेशियों में बहुत दर्द हुआ बहुत बुरा side effect','Combined with lifestyle change excellent results','Best statin for high risk cardiac patients']},
-    {'id':40,'name':'Amoxicillin 500mg','cat':'Antibiotic','mfr':'GSK','price':95,'disc':0,'stock':250,'rating':4.6,'rx':True,'img':f'{_U}1550572017-edd951b55104?w=300&q=80','tags':'amoxicillin penicillin bacterial infection throat','reviews':['Throat infection completely cleared in 3 days','Doctor prescribed for right indication important','GSK quality reliable brand trusted by doctors','Good for dental infections works very quickly','No major side effects except mild stomach upset','Complete the full course as prescribed essential','Effective for ear infections in children good','Affordable first line antibiotic widely available','Strep throat resolved completely with 5 day course','Bacterial infection gone completely no recurrence']},
-    {'id':41,'name':'Ciprofloxacin 500mg','cat':'Antibiotic','mfr':'Bayer','price':120,'disc':0,'stock':180,'rating':4.5,'rx':True,'img':f'{_U}1550572017-edd951b55104?w=300&q=80','tags':'ciprofloxacin fluoroquinolone UTI antibiotic','reviews':['UTI completely resolved in 3 days excellent','Works very fast for urinary tract infections','Doctor prescribed for food poisoning effective','Bayer quality excellent trusted reliable brand','Take with plenty of water as advised important','Avoid sunlight while on medication noted','Culture sensitivity confirmed right choice','Complete the course even after feeling better','Effective for resistant bacteria when needed','Good broad spectrum coverage for infections']},
-    {'id':42,'name':'Doxycycline 100mg','cat':'Antibiotic','mfr':'Cipla','price':140,'disc':0,'stock':150,'rating':4.5,'rx':True,'img':f'{_U}1550572017-edd951b55104?w=300&q=80','tags':'doxycycline tetracycline antibiotic acne infection','reviews':['Acne significantly improved after 6 weeks excellent','Malaria prophylaxis worked for my travel abroad','Doctor prescribed for respiratory infection effective','Take with food and water to prevent nausea','Avoid lying down for 30 min after taking','Sun sensitivity noted used sunscreen properly','Cipla quality is good and affordable excellent','Complete the course as prescribed by doctor','Very effective for atypical pneumonia tolerated','Good option when other antibiotics have been tried']},
-    # Mixed negative reviews, ranks lower in Antibiotic
-    {'id':43,'name':'Metronidazole 400mg','cat':'Antibiotic','mfr':'Abbott','price':45,'disc':0,'stock':280,'rating':4.4,'rx':True,'img':f'{_U}1550572017-edd951b55104?w=300&q=80','tags':'metronidazole anaerobic dental gut infection','reviews':['Dental infection completely resolved quickly excellent','Gut infection treated effectively no recurrence','Doctor prescribed for amoebic infection works well','ઉબકા ખૂબ આવ્યા ખૂબ ખરાબ side effect બેકાર','Avoid alcohol strictly for 48 hours after course','Abbott quality good and widely available','मुँह का स्वाद बहुत खराब हो गया बहुत बुरा अनुभव','Effective for anaerobic bacterial infections good','Complete the full 7 day course as prescribed','Affordable effective first choice antibiotic']},
-    {'id':44,'name':'Gripe Water 100ml','cat':'Baby Care','mfr':'Woodwards','price':95,'disc':0,'stock':380,'rating':4.7,'rx':False,'img':f'{_U}1556228720-195a672e8a03?w=300&q=80','tags':'gripe water baby colic gas infant stomach','reviews':['Colic relieved within 10 minutes works brilliantly','Baby stopped crying after first dose amazing','Trusted brand used by mothers for decades','Safe effective for newborns very gentle formula','Pediatrician approved gripe water excellent brand','Gas and bloating in baby resolved quickly','Very gentle on sensitive baby stomach safe','Gives relief during painful colic episodes','Woodwards quality trusted for generations worldwide','Essential item for every new parent recommend']},
-    {'id':45,'name':'Baby Teething Gel','cat':'Baby Care','mfr':'Bonjela','price':145,'disc':5,'stock':220,'rating':4.6,'rx':False,'img':f'{_U}1556228720-195a672e8a03?w=300&q=80','tags':'teething gel baby gum pain infant','reviews':['Teething pain relief within 5 minutes excellent','Baby calmed down immediately after applying wonderful','Bonjela quality excellent trusted pediatric brand','Safe formula for babies from 2 months onwards','Pediatrician recommended this brand for teething','Apply on gums with clean finger easy effective','Baby sleeps much better during teething phase','No harmful ingredients in formula reassuring','Works better than other teething remedies tried','Essential item in baby medicine cabinet recommend']},
-    {'id':46,'name':'Saline Nasal Drops','cat':'Baby Care','mfr':'Nasivion','price':85,'disc':0,'stock':280,'rating':4.7,'rx':False,'img':f'{_U}1584308666744-24d5c474f2ae?w=300&q=80','tags':'saline nasal drops baby congestion cold infant','reviews':['Blocked nose cleared within minutes works perfectly','Baby breathing much better after each application','Nasivion quality reliable trusted by pediatricians','Safe natural saline solution no side effects','Use before feeding to help baby breathe while eating','Doctor recommended for baby cold and congestion','Very gentle safe from birth onwards excellent','No burning sensation baby does not cry on use','Much safer than decongestant drops for babies','Indispensable for baby cold season recommend']},
-    {'id':47,'name':'ORS Electrolyte Sachet','cat':'Baby Care','mfr':'Abbott','price':55,'disc':0,'stock':350,'rating':4.8,'rx':False,'img':f'{_U}1604881988758-f76ad2f7aac1?w=300&q=80','tags':'electrolyte ORS dehydration baby diarrhea','reviews':['Dehydration from diarrhea resolved quickly excellent','Baby recovered very fast with this ORS solution','Pediatrician always recommends Abbott ORS quality','Right electrolyte balance for proper rehydration','Strawberry flavor baby accepts it well happily','Easy to prepare dissolves quickly in water','Abbott quality excellent and trusted for children','Prevented hospital admission with timely ORS use','Keep in baby medicine kit for emergencies always','Much better than homemade ORS for electrolytes']},
-    {'id':48,'name':'Magnesium Glycinate 400mg','cat':'Supplements','mfr':'Himalaya','price':420,'disc':5,'stock':160,'rating':4.7,'rx':False,'img':f'{_U}1571772996211-2f02c9727629?w=300&q=80','tags':'magnesium glycinate sleep muscle supplement','reviews':['Sleep quality dramatically improved first week excellent','Muscle cramps completely stopped after 2 weeks great','Anxiety reduced noticeably with consistent daily use','Himalaya quality always reliable well formulated','Best absorbed form of magnesium chelated glycinate','Migraine frequency reduced significantly wonderful','Glycinate form much gentler on stomach than oxide','Energy levels and mood both noticeably improved','Doctor approved for muscle cramps and sleep safe','Best magnesium supplement on Indian market recommended']},
-    {'id':49,'name':'Collagen Peptides 10g','cat':'Supplements','mfr':'Wellbeing Nutrition','price':850,'disc':10,'stock':120,'rating':4.6,'rx':False,'img':f'{_U}1571772996211-2f02c9727629?w=300&q=80','tags':'collagen peptides skin joint hair supplement','reviews':['Skin elasticity visibly improved after 8 weeks amazing','Joint pain during exercise significantly reduced excellent','Hair thickness and growth both noticeably improved','Hydrolyzed form for best absorption very effective','Mixes well in water or coffee completely tasteless','Wellbeing Nutrition quality premium highly effective','Nails became much stronger within 6 weeks great','Dermatologist approved ingredient for skin health','Morning routine addition that truly shows results','Best collagen supplement available in India recommended']},
-    # Mixed negative reviews, ranks lower in Supplements
-    {'id':50,'name':'CoQ10 100mg','cat':'Supplements','mfr':'Natrol','price':680,'disc':5,'stock':130,'rating':4.7,'rx':False,'img':f'{_U}1604881988758-f76ad2f7aac1?w=300&q=80','tags':'CoQ10 coenzyme heart energy antioxidant','reviews':['Energy levels significantly improved after 4 weeks','Cardiologist recommended for patients on statin excellent','Statin muscle pain resolved after adding CoQ10','Natrol quality reliable certified supplement brand','ખૂબ મોંઘું છે ખાસ ફાયદો ન થયો પૈસા બગડ્યા','Heart function improved according to cardiologist','Exercise endurance noticeably better with daily use','बहुत महंगा है और कोई खास फायदा नहीं हुआ बेकार','Antioxidant benefit for overall health longevity','Essential supplement for anyone taking statin medication']},
-]
+def get_doctor(did):
+    return next((d for d in DOCTORS if d['id'] == did), None)
 
-
-PRODUCT_CATEGORIES = sorted(set(p['cat'] for p in PRODUCTS))
-
-def get_product(pid): return next((p for p in PRODUCTS if p['id']==pid), None)
-def get_doctor(did): return next((d for d in DOCTORS if d['id']==did), None)
+def build_checkup_bill_payload(doctor: dict, appointment) -> dict:
+    """Build structured checkup bill data for an appointment."""
+    dept = doctor.get('dept', 'Cardiology')
+    proto = DEPT_CHECKUP_PROTOCOLS.get(dept, DEPT_CHECKUP_PROTOCOLS['Cardiology'])
+    fee = float(doctor.get('fee', 700))
+    items = []
+    subtotal = 0.0
+    for idx, it in enumerate(proto['items']):
+        amt = fee if idx == 0 else float(it['amount'])
+        subtotal += amt
+        items.append({
+            'code': it['code'],
+            'desc': it['desc'],
+            'amount': round(amt, 2),
+        })
+    tax = 0.0  # Healthcare consultation & diagnostics exempt from GST
+    total = round(subtotal + tax, 2)
+    bill_no = f"INV-MC-{appointment.id:04d}-{doctor['id']:02d}"
+    return {
+        'bill_no': bill_no,
+        'appointment_id': appointment.id,
+        'doctor_id': doctor['id'],
+        'doctor_name': f"Dr. {doctor['name']}",
+        'doctor_spec': doctor.get('spec', dept),
+        'department': dept,
+        'patient_name': appointment.patient_name,
+        'patient_phone': appointment.patient_phone or 'Not Provided',
+        'appt_date': str(appointment.appt_date),
+        'time_slot': appointment.time_slot,
+        'reason': appointment.reason or 'Routine Specialist Checkup & Clinical Evaluation',
+        'diagnosis': proto['diagnosis'],
+        'clinical_notes': proto['clinical_notes'],
+        'items': items,
+        'medications': proto['medications'],
+        'subtotal': round(subtotal, 2),
+        'tax': tax,
+        'total': total,
+        'bot_notice': (
+            "You can upload this checkup bill (or any medical bill with visible text) "
+            "into the Medi AI Bot using the Upload Bill button to extract the text and "
+            "talk directly with the AI about your charges, diagnosis, and prescribed medicines."
+        ),
+    }
