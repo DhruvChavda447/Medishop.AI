@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Create Account — MediCare.AI</title>
+<title>Create Account — MediShop.AI</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
@@ -15,13 +15,13 @@
 <div class="auth-box">
   <div class="auth-logo">
     <div class="nb-ic"><i class="fa fa-heartbeat"></i></div>
-    <span><span style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent">MediCare</span><span style="background:var(--grad-warm);-webkit-background-clip:text;-webkit-text-fill-color:transparent">.AI</span></span>
+    <span><span style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent">MediShop</span><span style="background:var(--grad-warm);-webkit-background-clip:text;-webkit-text-fill-color:transparent">.AI</span></span>
   </div>
   <div class="auth-tabs">
     <a href="{% url 'login' %}" class="auth-tab">Sign In</a>
     <a href="{% url 'signup' %}" class="auth-tab active">Create Account</a>
   </div>
-  {% if errors %}<div class="auth-err" style="display:block">{% for e in errors %}{{ e }}<br>{% endfor %}</div>{% endif %}{% if form.errors %}
+  {% if form.errors %}
   <div class="auth-err" style="display:block">
     {% for field in form %}{% for error in field.errors %}{{ error }}<br>{% endfor %}{% endfor %}
     {% for error in form.non_field_errors %}{{ error }}<br>{% endfor %}
@@ -57,7 +57,7 @@
   <div style="text-align:center">
     <a href="{% url 'login' %}" style="color:rgba(255,255,255,.5);font-size:.76rem">Already have an account? Sign in →</a>
   </div>
-  <div class="auth-hint">🔒 Your health data is encrypted &amp; private<br>Powered by Django + PostgreSQL</div>
+  <div class="auth-hint">Secure session authentication · Encrypted health records<br>Powered by Django + PostgreSQL</div>
 </div>
 <script>
 function togglePw(id,btn){const inp=document.getElementById(id);const show=inp.type==='password';inp.type=show?'text':'password';btn.innerHTML=show?'<i class="fa fa-eye-slash"></i>':'<i class="fa fa-eye"></i>';}

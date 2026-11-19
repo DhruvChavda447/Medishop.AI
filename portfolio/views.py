@@ -9,13 +9,13 @@ from portfolio.models import ContactMessage, ResumeFile, AboutProfile
 
 # ── Default profile data (Dhruv's resume) ────────────────────────
 DEFAULT_BIO = (
-    "I am a Python Developer and AI/ML Engineer building production-grade intelligent systems, "
-    "automation pipelines, and RAG-driven web applications. "
-    "MediCare.AI is my end-to-end clinical AI platform — featuring a 384-D Vector Database, "
-    "Retrieval-Augmented Generation (RAG) Text Creator, OCR Medical Bill Text Finder & Chat, "
-    "and XLM-RoBERTa Multilingual Sentiment & Aspect Analysis integrated with Django and PostgreSQL.\n\n"
-    "I specialize in bridging NLP/LLM engineering with reliable full-stack architectures — "
-    "from vector search and automated document understanding to scalable cloud deployments."
+    "I'm a Python Developer and AI/ML Engineer currently working at Actowiz Data Solutions, "
+    "where I build large-scale web scraping pipelines and automation systems. "
+    "MediShop Pro is my end-to-end AI portfolio project — featuring XLM-RoBERTa NLP, "
+    "Vision Transformer (ViT) image analysis, and multilingual mT5 response generation, "
+    "all integrated into a production-ready Django + PostgreSQL application.\n\n"
+    "I enjoy building systems that bridge ML research with real-world web applications — "
+    "from ETL pipelines on AWS/BigQuery to full-stack AI healthcare platforms."
 )
 
 DEFAULT_JOB_DESC = (
@@ -30,7 +30,7 @@ DEFAULT_SKILLS = {
         {"name": "Machine Learning / Deep Learning", "pct": 85},
         {"name": "NLP · Transformers · Fine-Tuning", "pct": 82},
         {"name": "Hugging Face · PyTorch", "pct": 80},
-        {"name": "RAG · Vector DB · LLM Text Generation", "pct": 90},
+        {"name": "RAG · LLM Integration", "pct": 72},
     ],
     "python": [
         {"name": "Python 3.11 · Scripting", "pct": 92},

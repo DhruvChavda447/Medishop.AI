@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Order Placed!{% endblock %}
+{% block content %}
+<div class="container" style="padding:48px 0;max-width:540px">
+  <div class="tc" style="padding:32px">
+    <div class="sic" style="background:var(--green-l);color:var(--green)"><i class="fa fa-check"></i></div>
+    <h2 style="margin-bottom:7px">Order Placed! 🎉</h2>
+    <p class="muted">Confirmed. Delivery in 2–5 business days.</p>
+    {% if order %}
+    <div style="margin:18px 0;text-align:left;background:#f8fafc;border-radius:var(--r);padding:16px">
+      <div style="display:flex;flex-direction:column;gap:6px;font-size:.83rem">
+        <div><b>Order ID:</b> {{ order.order_ref }}</div>
+        <div><b>Delivery:</b> {{ order.address }}</div>
+        <div><b>Total:</b> ₹{{ order.total }}</div>
+        <div><b>Payment:</b> {{ order.get_payment_method_display }}</div>
+        <div><b>Status:</b> <span style="color:var(--green);font-weight:700">✓ {{ order.status }}</span></div>
+      </div>
+    </div>
+    {% endif %}
+    <div class="flex" style="gap:12px;justify-content:center;flex-wrap:wrap">
+      <a href="{% url 'shop' %}" class="btn btn-p"><i class="fa fa-shopping-bag"></i> Continue Shopping</a>
+      <a href="{% url 'dashboard' %}" class="btn btn-w"><i class="fa fa-tachometer-alt"></i> Dashboard</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

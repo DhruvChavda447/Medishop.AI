@@ -1,22 +1,84 @@
-# MediCare.AI — RAG, 384-D Vector DB, Bill OCR & Multilingual Sentiment Platform
+# MediShop Pro — AI Healthcare Platform
 
-A clinical AI web platform built with **Django 4.2, PostgreSQL, a 384-D Hybrid Vector Database, Retrieval-Augmented Generation (RAG), Multi-Format Medical Bill OCR Text Finder, and XLM-RoBERTa Multilingual Sentiment & Aspect Analysis**.
+Full-stack Django + PostgreSQL platform with Transformer NLP, Vision AI, and DNN inference.
 
-## Core Modules
+---
 
-1. **RAG + 384-D Vector Database + Top Text Creator Bot (`doctors/rag_engine.py`)**:
-   - Hybrid 384-dimensional dense feature-hashing + BM25 cosine similarity vector search.
-   - Generates structured clinical reports, diet & recovery plans, and doctor follow-up emails.
-   - Supports optional live LLM API keys (`GEMINI_API_KEY`, `GROQ_API_KEY`, `OPENAI_API_KEY`) plus a zero-dependency built-in Clinical RAG Text Synthesis engine.
-   - **Voice-Free Command Page Navigation**: Navigate to any page via text commands (`"open doctors"`, `"go to sentiment"`, `"open dashboard"`, `"open about"`, `"go home"`).
-2. **NLP Doctor Ranking & Post-Checkup Medical Bill Generator (`/doctors/`)**:
-   - Ranks 29 specialists across 10 departments by XLM-RoBERTa patient review sentiment score.
-   - Automatically generates an itemized **Doctor Checkup Bill & Clinical Prescription** after booking a checkup, downloadable as a high-resolution **PNG Image Bill** or **TXT Bill**.
-3. **Medical Bill OCR Text Finder & Interactive Bill Chat (`/api/rag/upload-bill/`)**:
-   - Upload any checkup bill or hospital invoice with visible text (`.png`, `.jpg`, `.pdf`, `.txt`) into the Medi AI Bot.
-   - Extracts visible text via client-side WebAssembly OCR (`Tesseract.js`) + server-side `PyPDF` / `Pillow` metadata + `pytesseract`, indexes the bill in the Vector DB, and answers questions about charges, totals, diagnoses, and prescribed medicines.
-4. **Multilingual Sentiment & 5-Aspect Chat Studio (`/sentiment/`)**:
-   - Negation-aware sentiment classification across English, Gujarati (`ગુજરાતી`), Hindi (`हिन्दी`), French, Spanish, German, and Arabic.
-   - Evaluates 5 healthcare aspects, polarity (`-1.0` to `+1.0`), emotion triggers, native-language empathetic responses, and includes an **Interactive Sentiment Chat Studio**.
-5. **Montserrat Responsive UI**:
-   - Styled globally with Google Font **Montserrat** and **JetBrains Mono**, responsive across desktop, tablet, and mobile viewports.
+## Quick Setup
+
+### 1. Install dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 2. Configure `.env`
+```
+SECRET_KEY=your-secret-key
+DEBUG=True
+DB_NAME=medishop
+DB_USER=postgres
+DB_PASSWORD=yourpassword
+DB_HOST=localhost
+DB_PORT=5432
+RESUME_PASSWORD=YourResumePassword2024
+```
+
+### 3. Run migrations
+```bash
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
+```
+
+**OR** use the SQL script directly:
+```bash
+psql -U postgres -d medishop -f create_tables.sql
+python manage.py migrate --run-syncdb
+```
+
+---
+
+## Pages
+
+| URL | Page | Description |
+|-----|------|-------------|
+| `/` | Home | AI pipeline overview, project modules |
+| `/shop/` | Medicine Shop | XLM-RoBERTa NLP ranked, category-wise |
+| `/doctors/` | Find Doctors | NLP ranked per specialty |
+| `/health/` | Health AI | PyTorch DNN cardiovascular risk |
+| `/skin/` | Skin ViT | Vision Transformer image analysis |
+| `/sentiment/` | Check Sentiment | XLM-R → Prompt → mT5 pipeline |
+| `/about/` | About & Contact | Portfolio + contact form + resume |
+| `/resume/upload/` | Resume Manager | Password-protected upload |
+
+---
+
+## Resume Management (No Redeployment Needed)
+
+1. Go to `/resume/upload/`
+2. Enter your password (set in `.env` as `RESUME_PASSWORD`)
+3. Upload new PDF
+4. All users instantly see the new resume on `/about/`
+
+---
+
+## Training Your Own ViT
+
+See the "How to Train" section at `/skin/` for full instructions.
+
+Datasets: ISIC (skin), ODIR-5K (eye), Messidor (diabetic retinopathy)
+
+---
+
+## Apps
+
+| App | Purpose |
+|-----|---------|
+| `home_app` | Landing page |
+| `shop` | Products, cart, checkout, orders |
+| `doctors` | Doctor listing + appointments |
+| `health_ai` | DNN health risk prediction |
+| `skin_ai` | ViT image classification |
+| `sentiment_check` | XLM-RoBERTa + mT5 pipeline |
+| `portfolio` | About, contact form, resume manager |
+| `core_auth` | Login, signup, dashboard |

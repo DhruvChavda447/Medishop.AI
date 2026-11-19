@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Health Risk AI{% endblock %}
+{% block extra_css %}<style>
+.health-hero{background:linear-gradient(135deg,#059669,#10b981);padding:60px 0 100px;text-align:center;color:#fff;position:relative;overflow:hidden}
+.health-hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:60px;background:var(--surface);clip-path:ellipse(55% 100% at 50% 100%)}
+.hform-wrap{max-width:900px;margin:0 auto;padding:40px 20px 80px}
+.hcard{background:#fff;border-radius:20px;padding:32px;box-shadow:0 8px 32px rgba(5,150,105,.1);border:1.5px solid rgba(5,150,105,.15);margin-bottom:24px}
+.hcard-title{font-size:1rem;font-weight:800;margin-bottom:20px;display:flex;align-items:center;gap:10px;color:var(--green)}
+.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.fg{display:flex;flex-direction:column;gap:6px}
+.fl{font-size:.75rem;font-weight:700;color:var(--ink2)}
+.fc{padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:.85rem;font-family:var(--fb);outline:none;transition:all .2s}
+.fc:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(5,150,105,.1)}
+.cbx-row{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--surface);border-radius:10px;cursor:pointer;border:1.5px solid var(--border)}
+.cbx-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--green)}
+.btn-calc{width:100%;background:linear-gradient(135deg,#059669,#10b981);color:#fff;border:none;padding:15px;border-radius:13px;font-weight:800;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 8px 24px rgba(5,150,105,.35);transition:all .25s}
+.btn-calc:hover{transform:translateY(-2px)}
+.factor-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.factor-item{padding:14px;border-radius:12px;display:flex;align-items:center;gap:12px;font-size:.83rem}
+.rec-item{padding:12px 16px;background:var(--green-l);border-radius:10px;font-size:.83rem;color:var(--green-d);display:flex;align-items:flex-start;gap:10px;border-left:3px solid var(--green);margin-bottom:10px}
+.pipe{display:flex;align-items:center;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:24px}
+.pipe-s{background:rgba(255,255,255,.2);border-radius:10px;padding:8px 14px;font-size:.72rem;font-weight:700;color:#fff}
+.pipe-a{font-size:.9rem;color:rgba(255,255,255,.5)}
+@media(max-width:768px){.form-grid{grid-template-columns:repeat(2,1fr)}}
+</style>{% endblock %}
+{% block content %}
+<div class="health-hero">
+  <div class="container" style="position:relative;z-index:2">
+    <div style="font-size:2.5rem;margin-bottom:16px">🧬</div>
+    <h1 style="font-size:2rem;font-weight:800;margin-bottom:10px">Cardiovascular Health Risk AI</h1>
+    <p style="opacity:.85;font-size:.95rem;max-width:500px;margin:0 auto 24px">PyTorch 3-layer DNN · 11 clinical biomarkers · Real-time risk scoring</p>
+    <div class="pipe">
+      <div class="pipe-s">📋 11 Inputs</div><div class="pipe-a">→</div>
+      <div class="pipe-s">⚙️ Feature Normalization</div><div class="pipe-a">→</div>
+      <div class="pipe-s">🧠 DNN (64→32→16→1)</div><div class="pipe-a">→</div>
+      <div class="pipe-s">📊 Risk Score 0–100%</div><div class="pipe-a">→</div>
+      <div class="pipe-s">💊 Recommendations</div>
+    </div>
+  </div>
+</div>
+<div class="hform-wrap">
+  <div class="hcard">
+    <div class="hcard-title"><i class="fa fa-user-md"></i> Patient Clinical Inputs</div>
+    <div class="form-grid">
+      <div class="fg"><label class="fl">Age (years)</label><input class="fc" type="number" id="age" value="35" min="1" max="120"></div>
+      <div class="fg"><label class="fl">BMI</label><input class="fc" type="number" id="bmi" value="24.5" step="0.1"></div>
+      <div class="fg"><label class="fl">Blood Pressure Systolic</label><input class="fc" type="number" id="bps" value="120"></div>
+      <div class="fg"><label class="fl">Blood Pressure Diastolic</label><input class="fc" type="number" id="bpd" value="80"></div>
+      <div class="fg"><label class="fl">Blood Glucose (mg/dL)</label><input class="fc" type="number" id="glc" value="95"></div>
+      <div class="fg"><label class="fl">Cholesterol (mg/dL)</label><input class="fc" type="number" id="chol" value="180"></div>
+      <div class="fg"><label class="fl">Heart Rate (bpm)</label><input class="fc" type="number" id="hr" value="72"></div>
+      <div class="fg"><label class="fl">Activity Level</label><select class="fc" id="act"><option value="sedentary">Sedentary</option><option value="moderate" selected>Moderate</option><option value="active">Active</option></select></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px">
+      <label class="cbx-row"><input type="checkbox" id="smk"><span style="font-size:.83rem;font-weight:600;margin-left:4px">🚬 Smoker</span></label>
+      <label class="cbx-row"><input type="checkbox" id="dia"><span style="font-size:.83rem;font-weight:600;margin-left:4px">💉 Diabetes</span></label>
+      <label class="cbx-row"><input type="checkbox" id="fam"><span style="font-size:.83rem;font-weight:600;margin-left:4px">🧬 Family History</span></label>
+    </div>
+  </div>
+  <button class="btn-calc" onclick="calcRisk()"><i class="fa fa-microchip"></i> Calculate Health Risk Score</button>
+  <div id="loading" style="display:none;text-align:center;padding:40px"><div style="width:48px;height:48px;border:4px solid var(--border);border-top:4px solid var(--green);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px"></div><p style="color:var(--muted)">Running DNN inference…</p></div>
+  <div id="result" style="display:none;margin-top:24px">
+    <div id="riskHero" style="background:var(--grad-green);border-radius:20px;padding:32px;text-align:center;color:#fff;margin-bottom:20px">
+      <div id="riskScore" style="font-size:4rem;font-weight:900;font-family:var(--fd)">—</div>
+      <div id="riskLabel" style="font-size:1.2rem;font-weight:700;margin-top:4px">—</div>
+      <div id="riskAdvice" style="font-size:.9rem;opacity:.9;margin-top:10px;max-width:500px;margin-left:auto;margin-right:auto">—</div>
+    </div>
+    <div class="hcard"><div class="hcard-title"><i class="fa fa-exclamation-triangle"></i> Risk Factors Identified</div><div class="factor-list" id="factorList"></div></div>
+    <div class="hcard"><div class="hcard-title"><i class="fa fa-lightbulb"></i> Medical Recommendations</div><div id="recList"></div></div>
+    <div class="hcard"><div class="hcard-title"><i class="fa fa-code"></i> DNN Architecture</div><div style="background:var(--ink2);border-radius:12px;padding:20px;font-family:var(--fm);font-size:.75rem;color:#a5f3fc;line-height:2">Input(11) → Linear(64) → ReLU → Dropout(0.2)<br>→ Linear(32) → ReLU → Dropout(0.2)<br>→ Linear(16) → ReLU → Linear(1) → Sigmoid<br>→ Risk Score ×90 + 5 = Final %</div></div>
+  </div>
+</div>
+<script>
+function getCookie(n){let c=document.cookie.split(';');for(let i of c){let p=i.trim().split('=');if(p[0]===n)return decodeURIComponent(p[1]);}return '';}
+async function calcRisk(){
+  document.getElementById('loading').style.display='block';
+  document.getElementById('result').style.display='none';
+  const d={age:document.getElementById('age').value,bmi:document.getElementById('bmi').value,bps:document.getElementById('bps').value,bpd:document.getElementById('bpd').value,glc:document.getElementById('glc').value,chol:document.getElementById('chol').value,hr:document.getElementById('hr').value,act:document.getElementById('act').value,smk:document.getElementById('smk').checked?1:0,dia:document.getElementById('dia').checked?1:0,fam:document.getElementById('fam').checked?1:0};
+  try{
+    const r=await fetch('/api/health/predict/',{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},body:JSON.stringify(d)});
+    const j=await r.json();
+    document.getElementById('loading').style.display='none';
+    if(!j.ok){alert(j.error);return;}
+    const data=j.data;
+    document.getElementById('riskHero').style.background=`linear-gradient(135deg,${data.risk_color},${data.risk_color}bb)`;
+    document.getElementById('riskScore').textContent=data.risk_score+'%';
+    document.getElementById('riskLabel').textContent=data.risk_label+' Risk';
+    document.getElementById('riskAdvice').textContent=data.advice;
+    document.getElementById('factorList').innerHTML=data.factors.length?data.factors.map(f=>`<div class="factor-item" style="background:${f.severity==='high'?'var(--red-l)':f.severity==='moderate'?'var(--amber-l)':'var(--green-l)'}"><div style="width:10px;height:10px;border-radius:50%;background:${f.severity==='high'?'var(--red)':f.severity==='moderate'?'var(--amber)':'var(--green)'};flex-shrink:0"></div><div><div style="font-weight:700">${f.name}</div><div style="color:var(--muted)">${f.value}</div></div></div>`).join(''):'<p style="color:var(--muted)">No major risk factors detected!</p>';
+    document.getElementById('recList').innerHTML=data.recommendations.map(r=>`<div class="rec-item"><i class="fa fa-check-circle" style="flex-shrink:0;margin-top:2px"></i>${r}</div>`).join('');
+    document.getElementById('result').style.display='block';
+    document.getElementById('result').scrollIntoView({behavior:'smooth'});
+  }catch(e){document.getElementById('loading').style.display='none';alert('Error: '+e.message);}
+}
+</script>
+{% endblock %}

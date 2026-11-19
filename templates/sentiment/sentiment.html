@@ -1,317 +1,174 @@
 {% extends "base.html" %}
-{% block title %}Multilingual Sentiment AI & Chat Studio{% endblock %}
+{% block title %}Check Sentiment{% endblock %}
 {% block extra_css %}<style>
-.sent-hero{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 55%,#1e3a8a 100%);padding:48px 0;color:#fff}
-.sent-hero h1{font-size:1.85rem;font-weight:800;color:#fff;margin-bottom:8px}
-.sent-hero p{color:#cbd5e1;font-size:.9rem;max-width:700px}
-.pipe-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:18px}
-.pipe-chip{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:6px 12px;font-size:.72rem;font-weight:700;color:#e2e8f0;font-family:var(--fm)}
-.pipe-arr{color:#64748b;font-size:.82rem}
-
-.sent-wrap{max-width:1180px;margin:0 auto;padding:32px 24px 60px}
-.sent-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:24px;align-items:start}
-
-.sent-card{background:#fff;border:1.5px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px;box-shadow:var(--sh)}
-.sent-card-title{font-size:.92rem;font-weight:800;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:8px}
-textarea.sent-ta{width:100%;min-height:115px;padding:13px;border:1.5px solid var(--border);border-radius:11px;font-size:.86rem;font-family:var(--fb);resize:vertical;outline:none;line-height:1.6}
-textarea.sent-ta:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
-.sample-btns{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px;margin-bottom:16px}
-.sbtn{padding:6px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.72rem;font-weight:700;cursor:pointer;transition:.18s;background:#fff;color:var(--ink2)}
-.sbtn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-xl)}
-.btn-run{width:100%;padding:13px;background:var(--grad);color:#fff;border:none;border-radius:11px;font-weight:700;font-size:.88rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 6px 18px rgba(37,99,235,.25);transition:.2s}
-.btn-run:hover{transform:translateY(-1px)}
-
-/* VISUAL METRICS & ASPECT CARDS */
-.res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
-.res-stat{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:14px 12px;text-align:center}
-.rs-val{font-size:1.1rem;font-weight:800}
-.rs-lbl{font-size:.66rem;color:var(--muted);font-weight:700;text-transform:uppercase;margin-top:3px}
-
-.aspect-row{margin-bottom:11px}
-.aspect-hdr{display:flex;justify-content:space-between;font-size:.76rem;font-weight:700;margin-bottom:4px;color:var(--ink2)}
-.aspect-bar{height:8px;background:#e2e8f0;border-radius:99px;overflow:hidden}
-.aspect-fill{height:100%;border-radius:99px;transition:width .6s ease}
-
-/* TERMINAL OUTPUT */
-.terminal{background:#0f172a;border:1px solid #334155;border-radius:14px;overflow:hidden;margin-top:18px}
-.terminal-bar{background:#1e293b;padding:10px 16px;border-bottom:1px solid #334155;display:flex;align-items:center;gap:8px}
-.t-dot{width:11px;height:11px;border-radius:50%}
-.terminal-body{padding:18px;font-family:var(--fm);font-size:.76rem;line-height:1.85;overflow-x:auto;color:#e2e8f0}
+.sent-wrap{max-width:880px;margin:0 auto;padding:32px 20px 60px}
+.sent-hero{background:linear-gradient(135deg,#0f172a,#1e1b4b);padding:48px 0;text-align:center;color:#fff;border-radius:0}
+.sent-hero h1{font-size:1.8rem;font-weight:800;margin-bottom:8px}
+.sent-hero p{color:rgba(255,255,255,.6);font-size:.88rem}
+.pipe-row{display:flex;align-items:center;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+.pipe-chip{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:7px 14px;font-size:.72rem;font-weight:700;color:rgba(255,255,255,.85);font-family:monospace}
+.pipe-arr{color:rgba(255,255,255,.3);font-size:.85rem}
+/* INPUT CARD */
+.sent-card{background:#fff;border:1.5px solid var(--border);border-radius:18px;padding:24px;margin-bottom:16px}
+.sent-card-title{font-size:.82rem;font-weight:800;color:var(--ink2);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+textarea.sent-ta{width:100%;min-height:120px;padding:13px;border:1.5px solid var(--border);border-radius:11px;font-size:.88rem;font-family:inherit;resize:vertical;outline:none;transition:border-color .2s;line-height:1.65}
+textarea.sent-ta:focus{border-color:var(--blue)}
+.sample-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.sbtn{padding:5px 13px;border:1.5px solid var(--border);border-radius:20px;font-size:.72rem;font-weight:600;cursor:pointer;transition:all .2s;background:#fff;color:var(--muted)}
+.sbtn:hover{border-color:var(--blue);color:var(--blue);background:#eff6ff}
+.btn-run{width:100%;padding:13px;background:linear-gradient(135deg,#0f172a,#1e1b4b);color:#10b981;border:none;border-radius:12px;font-weight:700;font-size:.92rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:monospace;letter-spacing:.03em;transition:all .25s}
+.btn-run:hover{opacity:.9;transform:translateY(-1px)}
+/* TERMINAL OUTPUT — HackerRank style */
+.terminal{background:#0d1117;border:1px solid #30363d;border-radius:14px;overflow:hidden;margin-top:20px}
+.terminal-bar{background:#161b22;padding:10px 16px;border-bottom:1px solid #30363d;display:flex;align-items:center;gap:8px}
+.t-dot{width:12px;height:12px;border-radius:50%}
+.terminal-body{padding:20px;font-family:'JetBrains Mono',monospace;font-size:.78rem;line-height:1.9;overflow-x:auto}
 .t-line{display:flex;gap:8px}
-.t-prompt{color:#64748b;user-select:none}
-.t-key{color:#93c5fd}
-.t-colon{color:#64748b}
-.t-str{color:#bfdbfe}
-.t-num{color:#38bdf8}
-.t-section{color:#60a5fa;font-weight:700;margin-top:10px;margin-bottom:4px}
-.t-response-box{background:rgba(16,185,129,.12);border-left:3px solid #10b981;padding:12px 14px;margin-top:10px;border-radius:0 8px 8px 0;color:#a7f3d0;line-height:1.7}
-.sent-pos{color:#34d399;font-weight:800}.sent-neg{color:#f87171;font-weight:800}.sent-neu{color:#fbbf24;font-weight:800}
-
-/* INTERACTIVE SENTIMENT CHAT STUDIO */
-.schat-box{display:flex;flex-direction:column;height:520px;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;background:#f8fafc}
-.schat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
-.sc-msg{max-width:88%;padding:12px 14px;border-radius:13px;font-size:.81rem;line-height:1.6}
-.sc-msg.ai{background:#fff;border:1px solid var(--border);color:var(--ink);align-self:flex-start;border-bottom-left-radius:4px}
-.sc-msg.user{background:var(--grad);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;font-weight:500}
-.schat-sugs{padding:8px 12px;background:#fff;border-top:1px solid var(--border);display:flex;gap:6px;flex-wrap:wrap}
-.sc-sug{padding:4px 10px;border-radius:20px;font-size:.69rem;font-weight:700;border:1px solid var(--border);background:var(--surface);color:var(--ink2);cursor:pointer}
-.sc-sug:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-xl)}
-.schat-input-row{display:flex;gap:8px;padding:10px 12px;background:#fff;border-top:1px solid var(--border)}
-
-@media(max-width:960px){
-  .sent-grid{grid-template-columns:1fr}
-}
-@media(max-width:600px){
-  .res-grid{grid-template-columns:1fr}
-}
+.t-prompt{color:#6e7681;user-select:none;flex-shrink:0}
+.t-key{color:#79c0ff}
+.t-colon{color:#6e7681}
+.t-str{color:#a5d6ff}
+.t-num{color:#79c0ff}
+.t-bool-pos{color:#56d364}
+.t-bool-neg{color:#f85149}
+.t-bool-neu{color:#e3b341}
+.t-label{color:#cae8ff;font-weight:700}
+.t-obj{color:#6e7681}
+.t-section{color:#388bfd;font-weight:700;margin-top:8px;margin-bottom:4px}
+.t-response-box{background:#0a3622;border-left:3px solid #56d364;padding:12px 16px;margin-top:10px;border-radius:0 8px 8px 0}
+.t-response-text{color:#7ee787;line-height:1.75;font-size:.78rem}
+.t-meta{color:#6e7681;font-size:.72rem;margin-top:14px;border-top:1px solid #21262d;padding-top:10px}
+/* LOADING */
+.terminal-loading{padding:20px;text-align:center;color:#56d364;font-family:monospace;font-size:.82rem}
+.loading-dots span{animation:dotBlink 1.4s infinite;display:inline-block}
+.loading-dots span:nth-child(2){animation-delay:.2s}
+.loading-dots span:nth-child(3){animation-delay:.4s}
+@keyframes dotBlink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+.sent-pos{color:#56d364}.sent-neg{color:#f85149}.sent-neu{color:#e3b341}
 </style>{% endblock %}
 {% block content %}
 <div class="sent-hero">
   <div class="container">
-    <h1>Multilingual Sentiment AI &amp; Interactive Chat Studio</h1>
-    <p>Negation-aware XLM-RoBERTa valence classification, 5-dimension clinical aspect analysis (ABSA), native language response generation, and live Sentiment Chat.</p>
+    <h1>Multilingual Sentiment Analysis</h1>
+    <p>Analyze customer and patient feedback across 100+ languages using XLM-RoBERTa classification and automated response generation.</p>
     <div class="pipe-row">
       <span class="pipe-chip">TEXT_INPUT</span>
       <span class="pipe-arr">→</span>
-      <span class="pipe-chip">lang_detect(100+)</span>
+      <span class="pipe-chip">lang_detect()</span>
       <span class="pipe-arr">→</span>
-      <span class="pipe-chip">xlm_roberta_valence()</span>
+      <span class="pipe-chip">xlm_roberta.classify()</span>
       <span class="pipe-arr">→</span>
-      <span class="pipe-chip">aspect_absa(5_dims)</span>
+      <span class="pipe-chip">prompt_engineer()</span>
       <span class="pipe-arr">→</span>
-      <span class="pipe-chip">multilingual_responder()</span>
+      <span class="pipe-chip">mt5.generate()</span>
+      <span class="pipe-arr">→</span>
+      <span class="pipe-chip">JSON_OUTPUT</span>
     </div>
   </div>
 </div>
 
 <div class="sent-wrap">
-  <div class="sent-grid">
-    <!-- LEFT COLUMN: MULTILINGUAL ANALYZER + ASPECT BREAKDOWN + TERMINAL -->
-    <div>
-      <div class="sent-card">
-        <div class="sent-card-title">
-          <span><i class="fa fa-microscope" style="color:var(--blue)"></i> Clinical Text &amp; Review Sentiment Analyzer</span>
-          <span style="font-size:.71rem;color:var(--muted);font-weight:600">Negation &amp; Aspect Aware</span>
-        </div>
-        <textarea class="sent-ta" id="inputText" placeholder="Enter any patient review, clinical feedback, or sentence in English, Gujarati, Hindi, French, Arabic..."></textarea>
-        <div class="sample-btns">
-          <button class="sbtn" onclick="setSample('Dr. Priya Sharma explained the ECG diagnosis very clearly! Quick recovery and no side effects at all.')">Positive (Negated 'no side effects')</button>
-          <button class="sbtn" onclick="setSample('The consultation was not good and the waiting time was terrible. Complete waste of money.')">Negative ('not good' + wait time)</button>
-          <button class="sbtn" onclick="setSample('ખૂબ સારી તબીબી સેવા અને ડૉક્ટરની સારવારથી ઝડપથી રાહત મળી, ખૂબ આભાર!')">Gujarati (Positive)</button>
-          <button class="sbtn" onclick="setSample('બહુ ખરાબ અનુભવ થયો, પૈસા બગડ્યા અને કોઈ ફાયદો ન થયો.')">Gujarati (Negative)</button>
-          <button class="sbtn" onclick="setSample('डॉक्टर का परामर्श बहुत अच्छा और प्रभावी रहा, तुरंत राहत मिली।')">Hindi (Positive)</button>
-          <button class="sbtn" onclick="setSample('बहुत खराब अनुभव, कोई फायदा नहीं हुआ और समय बर्बाद हुआ।')">Hindi (Negative)</button>
-          <button class="sbtn" onclick="setSample('Excellent médecin, diagnostic rapide et traitement très efficace !')">French</button>
-        </div>
-        <button class="btn-run" onclick="runAnalysis()">
-          <i class="fa fa-play"></i> Run Complete Multilingual Sentiment &amp; Aspect Pipeline
-        </button>
-      </div>
-
-      <!-- VISUAL ASPECT & POLARITY DASHBOARD (Hidden until first run) -->
-      <div id="visualResultCard" class="sent-card" style="display:none">
-        <div class="sent-card-title">
-          <span><i class="fa fa-chart-bar" style="color:var(--green)"></i> Sentiment Polarity &amp; 5-Aspect Clinical Breakdown</span>
-          <span id="vrLangBadge" style="font-size:.72rem;background:var(--blue-xl);color:var(--blue);padding:3px 10px;border-radius:20px;font-weight:700">EN</span>
-        </div>
-        <div class="res-grid">
-          <div class="res-stat">
-            <div class="rs-val" id="vrLabel">—</div>
-            <div class="rs-lbl">Classification</div>
-          </div>
-          <div class="res-stat">
-            <div class="rs-val" id="vrConf" style="color:var(--blue)">—</div>
-            <div class="rs-lbl">Confidence &amp; Polarity</div>
-          </div>
-          <div class="res-stat">
-            <div class="rs-val" id="vrEmotion" style="font-size:.88rem;color:var(--violet)">—</div>
-            <div class="rs-lbl">Detected Emotion</div>
-          </div>
-        </div>
-
-        <div id="vrAspectsWrap" style="margin-bottom:16px"></div>
-
-        <div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:12px;padding:14px 16px">
-          <div style="font-size:.72rem;font-weight:800;text-transform:uppercase;color:#065f46;margin-bottom:6px">
-            <i class="fa fa-reply"></i> Automated Empathetic Clinical Response
-          </div>
-          <div id="vrResponse" style="font-size:.82rem;color:#064e3b;line-height:1.68;white-space:pre-line"></div>
-        </div>
-      </div>
-
-      <!-- TERMINAL JSON PIPELINE OUTPUT -->
-      <div id="terminalWrap" style="display:none">
-        <div class="terminal">
-          <div class="terminal-bar">
-            <span class="t-dot" style="background:#ef4444"></span>
-            <span class="t-dot" style="background:#f59e0b"></span>
-            <span class="t-dot" style="background:#10b981"></span>
-            <span style="margin-left:8px;font-size:.72rem;color:#94a3b8;font-family:var(--fm)">medicare-ai › sentiment_absa_pipeline.py</span>
-          </div>
-          <div id="terminalBody" class="terminal-body"></div>
-        </div>
-      </div>
+  <div class="sent-card">
+    <div class="sent-card-title"><i class="fa fa-terminal" style="color:var(--blue)"></i> Input Text</div>
+    <textarea class="sent-ta" id="inputText" placeholder="Enter text in any language...&#10;&#10;Try: &quot;This product is absolutely amazing!&quot;&#10;Try: &quot;Worst experience ever, complete waste of money.&quot;&#10;Try: &quot;ખૂબ સારી દવા, ઝડપથી કામ કરે છે&quot;  (Gujarati)&#10;Try: &quot;बहुत खराब उत्पाद है&quot;  (Hindi)"></textarea>
+    <div class="sample-btns">
+      <button class="sbtn" onclick="setSample('This product is absolutely excellent! Works perfectly, highly recommend to everyone.')">🟢 Positive (EN)</button>
+      <button class="sbtn" onclick="setSample('Terrible quality, complete waste of money. Very disappointed.')">🔴 Negative (EN)</button>
+      <button class="sbtn" onclick="setSample('ખૂબ સારી દવા, ઝડપથી કામ કરે છે.')">🇮🇳 Gujarati</button>
+      <button class="sbtn" onclick="setSample('बहुत खराब उत्पाद है, बिल्कुल काम नहीं किया।')">🇮🇳 Hindi</button>
+      <button class="sbtn" onclick="setSample('Produit excellent, je le recommande vivement!')">🇫🇷 French</button>
+      <button class="sbtn" onclick="setSample('منتج رائع جداً، أنصح به بشدة')">🇸🇦 Arabic</button>
     </div>
+  </div>
 
-    <!-- RIGHT COLUMN: INTERACTIVE SENTIMENT CHAT STUDIO -->
-    <div>
-      <div class="sent-card" style="margin-bottom:0">
-        <div class="sent-card-title">
-          <span><i class="fa fa-comments" style="color:var(--violet)"></i> Interactive Sentiment Chat Studio</span>
-          <span style="font-size:.7rem;background:var(--violet-l);color:var(--violet);padding:3px 9px;border-radius:20px;font-weight:700">Live Model Chat</span>
-        </div>
-        <p style="font-size:.79rem;color:var(--muted);margin-bottom:14px;line-height:1.6">
-          Chat directly with the Sentiment AI model. Test any message, ask <em>"Why did this review get Positive/Negative?"</em>, or translate the clinical response into Gujarati or Hindi.
-        </p>
+  <button class="btn-run" onclick="runAnalysis()">
+    <i class="fa fa-play" style="font-size:.75rem"></i> $ python analyze.py --model xlm-roberta --generate mt5
+  </button>
 
-        <div class="schat-box">
-          <div class="schat-msgs" id="schatMsgs">
-            <div class="sc-msg ai">
-              <strong>Sentiment AI Chat Ready.</strong><br>
-              Type any sentence or patient review below (in English, Gujarati, Hindi, French, or Arabic) to get an instant polarity breakdown, trigger words, and bilingual clinical response—or ask me about the review you analyzed on the left!
-            </div>
-          </div>
-          <div class="schat-sugs">
-            <button class="sc-sug" onclick="sendSentimentChat('Why did this review get that sentiment score?')">Why this score?</button>
-            <button class="sc-sug" onclick="sendSentimentChat('Translate response to Gujarati')">Gujarati Response</button>
-            <button class="sc-sug" onclick="sendSentimentChat('Translate response to Hindi')">Hindi Response</button>
-            <button class="sc-sug" onclick="sendSentimentChat('The doctor checkup bill was very transparent and treatment worked fast!')">Test Positive</button>
-            <button class="sc-sug" onclick="sendSentimentChat('Very slow service and medication did not work at all.')">Test Negative</button>
-          </div>
-          <div class="schat-input-row">
-            <input type="text" id="schatInput" class="fc" placeholder="Type a message or ask about sentiment…" onkeydown="if(event.key==='Enter')sendSentimentChat()">
-            <button type="button" class="btn btn-p" onclick="sendSentimentChat()"><i class="fa fa-paper-plane"></i></button>
-          </div>
-        </div>
+  <div id="terminalWrap" style="display:none">
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="t-dot" style="background:#ff5f57"></span>
+        <span class="t-dot" style="background:#febc2e"></span>
+        <span class="t-dot" style="background:#28c840"></span>
+        <span style="margin-left:8px;font-size:.72rem;color:#6e7681;font-family:monospace">medishop › sentiment_pipeline.py</span>
+      </div>
+      <div id="terminalBody" class="terminal-body">
+        <div class="terminal-loading"><i class="fa fa-circle-notch fa-spin"></i> Running pipeline <span class="loading-dots"><span>.</span><span>.</span><span>.</span></span></div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-let lastAnalyzedText = '';
+function setSample(t){document.getElementById('inputText').value=t;}
+function getCookie(n){let c=document.cookie.split(';');for(let i of c){let p=i.trim().split('=');if(p[0]===n)return decodeURIComponent(p[1]);}return '';}
 
-function setSample(t){
-  document.getElementById('inputText').value = t;
-  runAnalysis();
-}
+const LANG_NAMES={EN:'English',HI:'Hindi',GU:'Gujarati',AR:'Arabic',ZH:'Chinese',JA:'Japanese',KO:'Korean',FR:'French',DE:'German',ES:'Spanish'};
 
-function escHtml(t){
-  return String(t || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function renderVisualAndTerminal(d){
+function renderTerminal(data) {
+  const d = data;
   const s = d.sentiment;
   const p = d.prompt_engineering;
   const g = d.generation;
   const m = d.metadata;
   const inp = d.input;
 
-  // 1. Visual Card
-  const vc = document.getElementById('visualResultCard');
-  vc.style.display = 'block';
-  document.getElementById('vrLangBadge').textContent = `${inp.language} · ${inp.language_name}`;
+  const sentClass = s.label==='positive'?'sent-pos':s.label==='negative'?'sent-neg':'sent-neu';
+  const sentEmoji = s.label==='positive'?'▲ POSITIVE':s.label==='negative'?'▼ NEGATIVE':'● NEUTRAL';
 
-  const lblEl = document.getElementById('vrLabel');
-  lblEl.textContent = s.label_upper;
-  lblEl.style.color = s.label === 'positive' ? 'var(--green)' : s.label === 'negative' ? 'var(--red)' : 'var(--amber)';
+  let html = `
+<div class="t-line"><span class="t-prompt">$</span><span style="color:#cae8ff">Pipeline execution started...</span></div>
+<div style="height:6px"></div>
 
-  document.getElementById('vrConf').textContent = `${s.confidence_pct}% (${s.polarity >= 0 ? '+' : ''}${s.polarity})`;
-  document.getElementById('vrEmotion').textContent = s.emotion;
-  document.getElementById('vrResponse').textContent = g.response;
+<div class="t-section">// ── INPUT ─────────────────────────────────</div>
+<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"text"</span><span class="t-colon">:</span><span class="t-str"> "${escHtml(inp.text.substring(0,80))}${inp.text.length>80?'...':''}"</span></div>
+<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"word_count"</span><span class="t-colon">:</span><span class="t-num"> ${inp.word_count}</span></div>
+<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"language"</span><span class="t-colon">:</span><span class="t-str"> "${inp.language}"</span><span style="color:#6e7681"> // ${LANG_NAMES[inp.language]||inp.language}</span></div>
 
-  const barColor = s.label === 'positive' ? 'var(--green)' : s.label === 'negative' ? 'var(--red)' : 'var(--amber)';
-  document.getElementById('vrAspectsWrap').innerHTML = (s.aspects || []).map(a => `
-    <div class="aspect-row">
-      <div class="aspect-hdr">
-        <span>${escHtml(a.aspect)} ${a.detected ? '<span style="color:var(--blue);font-size:.66rem">(Explicitly Mentioned)</span>' : ''}</span>
-        <span style="color:${barColor}">${a.score_pct}% · ${escHtml(a.sentiment)}</span>
-      </div>
-      <div class="aspect-bar"><div class="aspect-fill" style="width:${a.score_pct}%;background:${barColor}"></div></div>
-    </div>
-  `).join('');
+<div class="t-section">// ── XLM-RoBERTa SENTIMENT ─────────────────</div>
+<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"label"</span><span class="t-colon">:</span><span class=" ${sentClass}"> "${s.label_upper || s.label.toUpperCase()}"</span></div>
+<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"confidence"</span><span class="t-colon">:</span><span class="t-num"> ${s.confidence}</span><span style="color:#6e7681"> // ${s.confidence_pct}%</span></div>
+<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"status"</span><span class="t-colon">:</span><span class="t-str"> "${s.status}"</span></div>
 
-  // 2. Terminal Output (zero undefined variables)
-  const sentClass = s.label === 'positive' ? 'sent-pos' : s.label === 'negative' ? 'sent-neg' : 'sent-neu';
-  const html = `
-<div class="t-line"><span class="t-prompt">$</span><span style="color:#93c5fd">python sentiment_absa_pipeline.py --input "${escHtml(inp.text.substring(0,55))}..."</span></div>
-<div class="t-section">// ── 1. INPUT &amp; LANGUAGE DETECTION ─────────────────────</div>
-<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"language"</span><span class="t-colon">:</span><span class="t-str">"${escHtml(inp.language)} (${escHtml(inp.language_name)})"</span></div>
-<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"word_count"</span><span class="t-colon">:</span><span class="t-num">${inp.word_count}</span></div>
+<div class="t-section">// ── PROMPT ENGINEERING ────────────────────</div>
+<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"context"</span><span class="t-colon">:</span><span class="t-str"> "${escHtml(p.strategy || 'Multilingual Context Injection')}"</span></div>
+<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"tokens_approx"</span><span class="t-colon">:</span><span class="t-num"> ${p.tokens_approx}</span></div>
 
-<div class="t-section">// ── 2. XLM-RoBERTa + VALENCE SENTIMENT ────────────────</div>
-<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"label"</span><span class="t-colon">:</span><span class="${sentClass}">"${escHtml(s.label_upper)}"</span></div>
-<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"confidence"</span><span class="t-colon">:</span><span class="t-num">${s.confidence} (${s.confidence_pct}%)</span></div>
-<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"polarity_score"</span><span class="t-colon">:</span><span class="t-num">${s.polarity}</span></div>
-<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"emotion_detected"</span><span class="t-colon">:</span><span class="t-str">"${escHtml(s.emotion)}"</span></div>
-<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"engine_status"</span><span class="t-colon">:</span><span class="t-str">"${escHtml(s.status)}"</span></div>
+<div class="t-section">// ── mT5 RESPONSE GENERATION ───────────────</div>
+<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"status"</span><span class="t-colon">:</span><span class="t-str"> "${g.status}"</span></div>
+<div style="height:4px"></div>
+<div class="t-response-box">
+  <div style="font-size:.68rem;color:#3fb950;margin-bottom:6px;font-family:monospace">// Generated Response</div>
+  <div class="t-response-text">${escHtml(g.response)}</div>
+</div>
 
-<div class="t-section">// ── 3. PROMPT ENGINEERING &amp; CONTEXT INJECTION ─────────</div>
-<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"context_injected"</span><span class="t-colon">:</span><span class="t-str">"${escHtml(p.context_injected)}"</span></div>
-<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"strategy"</span><span class="t-colon">:</span><span class="t-str">"${escHtml(p.strategy)}"</span></div>
-<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"tokens_approx"</span><span class="t-colon">:</span><span class="t-num">${p.tokens_approx}</span></div>
+<div class="t-section">// ── METADATA ──────────────────────────────</div>
+<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"processing_ms"</span><span class="t-colon">:</span><span class="t-num"> ${m.processing_ms}</span></div>
+<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"pipeline_steps"</span><span class="t-colon">:</span><span class="t-num"> ${m.pipeline_steps}</span></div>
+<div class="t-line"><span class="t-prompt">›</span><span class="t-key">"languages_supported"</span><span class="t-colon">:</span><span class="t-num"> ${m.languages_supported}+</span></div>
 
-<div class="t-section">// ── 4. MULTILINGUAL RESPONSE GENERATION ───────────────</div>
-<div class="t-response-box">${escHtml(g.response)}</div>
-<div style="margin-top:12px;font-size:.7rem;color:#94a3b8">✓ Pipeline completed in ${m.processing_ms}ms · ${m.pipeline_steps} verified stages</div>`;
-  document.getElementById('terminalWrap').style.display = 'block';
+<div class="t-meta">
+  <span style="color:#56d364">✓</span> Pipeline complete · ${m.processing_ms}ms
+</div>`;
   document.getElementById('terminalBody').innerHTML = html;
 }
 
+function escHtml(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
 async function runAnalysis(){
   const text = document.getElementById('inputText').value.trim();
-  if(!text){ toast('Please enter text to analyze', 'warning'); return; }
-  lastAnalyzedText = text;
-  document.getElementById('terminalWrap').style.display = 'block';
-  document.getElementById('terminalBody').innerHTML = '<div style="color:#34d399">Running Multilingual Sentiment &amp; Aspect Pipeline...</div>';
-  try {
-    const r = await apiPost('/api/sentiment/', {text});
-    if(!r.ok){
-      document.getElementById('terminalBody').innerHTML = `<div style="color:#f87171">Error: ${escHtml(r.error)}</div>`;
-      return;
-    }
-    renderVisualAndTerminal(r.data);
-  } catch(e) {
-    document.getElementById('terminalBody').innerHTML = `<div style="color:#f87171">Network error: ${escHtml(e.message)}</div>`;
-  }
-}
-
-async function sendSentimentChat(presetText){
-  const inp = document.getElementById('schatInput');
-  const msg = (presetText || inp.value || '').trim();
-  if(!msg) return;
-  if(!presetText) inp.value = '';
-
-  const box = document.getElementById('schatMsgs');
-  const uDiv = document.createElement('div');
-  uDiv.className = 'sc-msg user';
-  uDiv.textContent = msg;
-  box.appendChild(uDiv);
-  box.scrollTop = box.scrollHeight;
-
-  try {
-    const r = await apiPost('/api/sentiment/chat/', {
-      message: msg,
-      last_analyzed_text: lastAnalyzedText || document.getElementById('inputText').value.trim()
-    });
-    const aiDiv = document.createElement('div');
-    aiDiv.className = 'sc-msg ai';
-    if(r.ok){
-      aiDiv.innerHTML = formatBotMarkdown(r.data.reply);
-      if(!lastAnalyzedText && r.data.analysis){
-        lastAnalyzedText = msg;
-      }
-    } else {
-      aiDiv.textContent = 'Error: ' + (r.error || 'Could not analyze message');
-    }
-    box.appendChild(aiDiv);
-    box.scrollTop = box.scrollHeight;
-  } catch(e) {
-    const errDiv = document.createElement('div');
-    errDiv.className = 'sc-msg ai';
-    errDiv.textContent = 'Network error communicating with Sentiment Chat engine.';
-    box.appendChild(errDiv);
-  }
+  if(!text){alert('Please enter some text.');return;}
+  const wrap = document.getElementById('terminalWrap');
+  wrap.style.display = 'block';
+  document.getElementById('terminalBody').innerHTML = '<div class="terminal-loading"><i class="fa fa-circle-notch fa-spin"></i> Running pipeline <span class="loading-dots"><span>.</span><span>.</span><span>.</span></span></div>';
+  wrap.scrollIntoView({behavior:'smooth',block:'center'});
+  try{
+    const r = await fetch('/api/sentiment/',{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},body:JSON.stringify({text,generate_response:true})});
+    const j = await r.json();
+    if(!j.ok){document.getElementById('terminalBody').innerHTML=`<div style="color:#f85149;padding:10px">Error: ${escHtml(j.error||'Unknown error')}</div>`;return;}
+    renderTerminal(j.data);
+  }catch(e){document.getElementById('terminalBody').innerHTML=`<div style="color:#f85149;padding:10px">Network error: ${escHtml(e.message)}</div>`;}
 }
 </script>
 {% endblock %}
